@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta id="viewport-meta" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>이해원 모의고사 Final 전략 수립</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-page: #eef2f7;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --text-tertiary: #94a3b8;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --card-shadow: 0 20px 60px rgba(15, 23, 42, 0.10);
+            --inner-section-bg: #f8fafc;
+            --inner-section-border: #e2e8f0;
+            --inner-item-bg: #ffffff;
+            --inner-item-border-left: #17a2b8;
+            --inner-item-border-empty: #cbd5e1;
+            --inner-item-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            --accent-mint: #17a2b8;
+            --logo-blend: multiply;
+            --sns-bg: #ffffff;
+            --sns-border: #e2e8f0;
+            --sns-color: #94a3b8;
+            --footer-info-color: #64748b;
+            --footer-copy-color: #94a3b8;
+            --timer-text-shadow: 2px 2px 4px rgba(15, 23, 42, 0.08);
+            --toggle-color: #64748b;
+            --toggle-hover-bg: rgba(15, 23, 42, 0.06);
+        }
+
+        body.dark {
+            --bg-page: #131315;
+            --text-primary: #ffffff;
+            --text-secondary: #c5c5c5;
+            --text-tertiary: #909090;
+            --card-bg: #1b1b1d;
+            --card-border: rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            --inner-section-bg: #2a2a2c;
+            --inner-section-border: rgba(255, 255, 255, 0.06);
+            --inner-item-bg: #353437;
+            --inner-item-border-left: #23e373;
+            --inner-item-border-empty: rgba(255, 255, 255, 0.12);
+            --inner-item-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            --accent-mint: #23e373;
+            --logo-blend: normal;
+            --sns-bg: #2a2a2c;
+            --sns-border: rgba(255, 255, 255, 0.08);
+            --sns-color: #909090;
+            --footer-info-color: #c5c5c5;
+            --footer-copy-color: #909090;
+            --timer-text-shadow: 0 0 24px rgba(35, 227, 115, 0.35);
+            --toggle-color: #c5c5c5;
+            --toggle-hover-bg: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-page);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            touch-action: manipulation;
+            -webkit-text-size-adjust: 100%;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .container { max-width: 600px; width: 100%; text-align: center; }
+
+        /* [로고] */
+        .main-logo {
+            width: 220px;
+            height: auto;
+            margin-bottom: 30px;
+            mix-blend-mode: var(--logo-blend);
+        }
+        /* 다크 모드 폴백: 회사 로고 PNG의 흰 배경이 다크 테마에서 튀어 보이므로,
+           원본 이미지를 숨기고 INTEGRATE 텍스트로 대체 */
+        .logo-text {
+            display: none;
+            margin-bottom: 30px;
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1;
+        }
+        body.dark .main-logo { display: none; }
+        body.dark .logo-text { display: inline-block; }
+
+        /* [다크/라이트 토글 — 박스 없음, 우상단 fixed] */
+        .theme-toggle {
+            position: fixed;
+            top: 14px;
+            right: 14px;
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--toggle-color);
+            z-index: 200;
+            padding: 0;
+            transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+        }
+        .theme-toggle:hover {
+            background: var(--toggle-hover-bg);
+            transform: scale(1.08);
+        }
+        .theme-toggle:active { transform: scale(0.94); }
+        .theme-toggle svg { width: 22px; height: 22px; }
+
+        /* [박스] */
+        .white-box {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+            margin-bottom: 30px;
+            transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        h1 {
+            color: var(--text-primary);
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        /* [버튼 공통 스타일] */
+        .btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            text-decoration: none;
+            margin-bottom: 15px;
+            touch-action: manipulation;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            filter: brightness(1.1);
+        }
+        .btn:active { transform: translateY(0); filter: brightness(1.0); }
+
+        .btn-purple { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-pink { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .btn-mint { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; }
+
+        /* [타이머 조작 버튼] */
+        .btn-start { background: #28a745; color: white; flex: 1; margin-bottom: 0; }
+        .btn-pause { background: #ffc107; color: #333; flex: 1; margin-bottom: 0; }
+        .btn-reset { background: #dc3545; color: white; flex: 1; margin-bottom: 0; }
+        .btn-record { background: #17a2b8; color: white; flex: 1; margin-bottom: 0; }
+        .btn-record:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; filter: none; }
+        .btn-back { background: #6c757d; color: white; margin-top: 20px; }
+
+        /* 화면 전환 */
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* 이미지 컨테이너 */
+        .image-container img { width: 100%; border-radius: 12px; margin-bottom: 15px; }
+        .zoom-hint { color: var(--text-tertiary); font-size: 14px; margin-bottom: 15px; }
+
+        /* 타이머 스타일 */
+        .timer-display {
+            font-size: 64px;
+            font-weight: bold;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            margin: 30px 0;
+            text-shadow: var(--timer-text-shadow);
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+        .timer-label { color: var(--text-secondary); font-size: 18px; margin-bottom: 10px; }
+        .timer-hint { color: var(--text-tertiary); font-size: 13px; margin-bottom: 5px; }
+        .timer-buttons { display: flex; gap: 10px; margin-bottom: 10px; }
+        .timer-buttons .btn { padding: 14px; font-size: 16px; }
+
+        .timestamp-section {
+            margin-top: 20px; padding: 15px;
+            background: var(--inner-section-bg);
+            border-radius: 12px;
+            border: 1px solid var(--inner-section-border);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .timestamp-title { font-size: 16px; color: var(--text-secondary); margin-bottom: 10px; }
+        .timestamp-list { display: flex; flex-direction: column; gap: 8px; }
+        .timestamp-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 15px; background: var(--inner-item-bg); border-radius: 8px;
+            border-left: 4px solid var(--inner-item-border-left);
+            box-shadow: var(--inner-item-shadow);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .timestamp-item.empty { color: var(--text-tertiary); border-left-color: var(--inner-item-border-empty); justify-content: center; }
+        .timestamp-number { font-weight: 600; color: var(--accent-mint); }
+        .timestamp-time { font-family: 'Courier New', monospace; font-size: 18px; font-weight: bold; color: var(--text-primary); }
+        .record-count { font-size: 14px; color: var(--text-tertiary); margin-top: 10px; }
+        .emoji { font-size: 24px; }
+
+        /* 푸터 */
+        .ig-footer { padding: 0 12px 20px; }
+        .ig-footer__sns { display: flex; gap: 10px; align-items: center; justify-content: center; margin-bottom: 15px; }
+        .ig-sns { width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; text-decoration: none; background: var(--sns-bg); border: 1px solid var(--sns-border); transition: transform .12s ease, box-shadow .12s ease, background .3s ease, border-color .3s ease, color .3s ease; color: var(--sns-color); }
+        .ig-sns:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(15, 23, 42, .08); }
+        .ig-sns svg { width: 20px; height: 20px; fill: currentColor; stroke: currentColor; }
+        .ig-sns--instagram:hover { color: #E1306C; border-color: currentColor; }
+        .ig-sns--naver:hover { color: #03C75A; border-color: #03C75A; }
+        .ig-footer__info { margin: 12px 0 10px; display: grid; gap: 6px; color: var(--footer-info-color); font-size: 12.5px; line-height: 1.35; text-align: center; }
+        .ig-footer__info p { margin: 0; }
+        .ig-footer__info a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+        .ig-footer__copyright { margin: 0; font-size: 12.5px; color: var(--footer-copy-color); text-align: center; }
+
+        /* [문항별 lap 그리드] */
+        .question-grid-section { margin-top: 24px; text-align: left; }
+        .grid-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin: 14px 4px 8px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+        .grid-label:first-child { margin-top: 0; }
+        .question-grid {
+            display: grid;
+            gap: 6px;
+        }
+        .grid-common { grid-template-columns: repeat(4, 1fr); }
+        .grid-select { grid-template-columns: repeat(4, 1fr); }
+        .question-cell {
+            aspect-ratio: 1.1;
+            background: var(--inner-item-bg);
+            border: 1px solid var(--inner-section-border);
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 2px;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            font-family: inherit;
+            color: var(--text-primary);
+            box-shadow: var(--inner-item-shadow);
+            transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.2s ease, transform 0.08s ease;
+        }
+        .question-cell:active { transform: scale(0.94); }
+        .question-cell .num { font-size: 15px; font-weight: 700; line-height: 1; }
+        .question-cell .time {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            font-family: 'Courier New', monospace;
+            line-height: 1;
+            min-height: 11px;
+        }
+        .question-cell .badge {
+            position: absolute;
+            top: 3px;
+            right: 5px;
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--accent-mint);
+        }
+        .question-cell.has-time { background: var(--inner-section-bg); }
+        .question-cell.active {
+            border-color: var(--accent-mint);
+            box-shadow: 0 0 0 2px rgba(35, 227, 115, 0.18), 0 0 18px rgba(35, 227, 115, 0.3);
+            background: var(--inner-section-bg);
+        }
+        .question-cell.active .num,
+        .question-cell.active .time { color: var(--accent-mint); }
+        .question-grid-section.disabled .question-cell { opacity: 0.45; cursor: not-allowed; }
+
+        /* [lap 상세 팝오버] */
+        .lap-popover-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 300;
+            animation: fadeIn 0.15s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .lap-popover {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 22px;
+            min-width: 260px;
+            max-width: 88%;
+            max-height: 82vh;
+            overflow-y: auto;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+        }
+        .lap-row.empty { opacity: 0.55; }
+        .lap-popover-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 14px;
+            text-align: center;
+        }
+        .lap-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 9px 14px;
+            background: var(--inner-section-bg);
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        .lap-row .label { color: var(--text-secondary); }
+        .lap-row .value { font-family: 'Courier New', monospace; font-weight: 600; }
+        .lap-row.active .value { color: var(--accent-mint); }
+        .lap-row.total {
+            background: transparent;
+            border-top: 1px solid var(--inner-section-border);
+            margin-top: 10px;
+            padding: 12px 14px 4px;
+            border-radius: 0;
+            font-weight: 700;
+        }
+        .lap-popover-close {
+            width: 100%;
+            padding: 11px;
+            margin-top: 14px;
+            background: var(--accent-mint);
+            color: white;
+            border: none;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: filter 0.15s ease;
+        }
+        .lap-popover-close:hover { filter: brightness(1.1); }
+
+        /* [결과 모달 — 4열 그리드] */
+        .results-modal {
+            width: 340px;
+            max-width: 92vw;
+            min-width: unset;
+        }
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+        .result-cell {
+            background: var(--inner-section-bg);
+            border: 1px solid var(--inner-section-border);
+            border-radius: 10px;
+            padding: 8px 4px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-height: 50px;
+        }
+        .result-cell.empty { opacity: 0.45; }
+        .result-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.1;
+            letter-spacing: -0.01em;
+        }
+        .result-label .badge {
+            color: var(--accent-mint);
+            font-size: 10px;
+            font-weight: 700;
+            margin-left: 2px;
+        }
+        .result-times {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: var(--text-primary);
+            line-height: 1.25;
+        }
+        .result-time .idx {
+            display: inline-block;
+            color: var(--text-secondary);
+            margin-right: 3px;
+            font-size: 10px;
+        }
+        .result-time.muted { color: var(--text-tertiary); }
+        .result-time.sum {
+            color: var(--accent-mint);
+            font-weight: 700;
+            border-top: 1px solid var(--inner-section-border);
+            padding-top: 2px;
+            margin-top: 2px;
+        }
+
+        /* [브리딩 타이머 원 + 컬러 테마] */
+        .timer-container {
+            position: relative;
+            width: min(240px, 60vw);
+            aspect-ratio: 1 / 1;
+            margin: 24px auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            --timer-color: #17a2b8;
+            --timer-glow: rgba(23, 162, 184, 0.28);
+        }
+        body.dark .timer-container {
+            --timer-color: #23e373;
+            --timer-glow: rgba(35, 227, 115, 0.32);
+        }
+        .timer-container.theme-yellow {
+            --timer-color: #eab308;
+            --timer-glow: rgba(234, 179, 8, 0.35);
+        }
+        .timer-container.theme-red {
+            --timer-color: #ef4444;
+            --timer-glow: rgba(239, 68, 68, 0.42);
+        }
+        .breathing-circle {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 2px solid var(--timer-color);
+            opacity: 0.28;
+            box-shadow: 0 0 0 0 var(--timer-glow);
+            transition: border-color 0.8s ease, opacity 0.4s ease;
+        }
+        .timer-container.running .breathing-circle {
+            animation: breathe-circle 4.5s ease-in-out infinite;
+        }
+        @keyframes breathe-circle {
+            0%, 100% {
+                transform: scale(0.9);
+                opacity: 0.25;
+                box-shadow: 0 0 0 0 var(--timer-glow);
+            }
+            50% {
+                transform: scale(1);
+                opacity: 0.8;
+                box-shadow: 0 0 40px 8px var(--timer-glow);
+            }
+        }
+        .timer-container .timer-display {
+            position: relative;
+            margin: 0;
+            z-index: 1;
+            color: var(--timer-color);
+            text-shadow: 0 0 24px var(--timer-glow);
+            transition: color 0.8s ease, text-shadow 0.8s ease;
+        }
+
+        /* [인라인 결과 패널] */
+        .results-inline {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--inner-section-bg);
+            border: 1px solid var(--inner-section-border);
+            border-radius: 14px;
+            text-align: left;
+            animation: fadeIn 0.25s ease;
+        }
+        .results-inline-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 14px;
+        }
+        .results-inline .results-grid {
+            margin-bottom: 0;
+            grid-template-columns: repeat(4, 1fr);
+        }
+        .results-inline .lap-row.total {
+            background: transparent;
+            border-top: 1px solid var(--inner-section-border);
+            margin-top: 10px;
+            padding: 12px 14px 4px;
+            border-radius: 0;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        .results-inline .lap-row.total .label { color: var(--text-secondary); }
+        .results-inline .lap-row.total .value { font-family: 'Courier New', monospace; font-weight: 700; }
+        .results-inline-retry {
+            width: 100%;
+            margin-top: 14px;
+            padding: 14px;
+            background: var(--accent-mint);
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: filter 0.15s ease, transform 0.1s ease;
+        }
+        .results-inline-retry:hover { filter: brightness(1.08); }
+        .results-inline-retry:active { transform: scale(0.98); }
+        body.dark .results-inline-retry { color: #0a0a0a; }
+
+        /* [하단 네비게이션 — 플로팅 pill] */
+        .bottom-nav {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: max(14px, env(safe-area-inset-bottom));
+            z-index: 150;
+            width: min(540px, calc(100% - 24px));
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            padding: 8px;
+            border-radius: 26px;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.14), 0 -2px 8px rgba(15, 23, 42, 0.04);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        body.dark .bottom-nav {
+            background: rgba(27, 27, 29, 0.82);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 -2px 8px rgba(0, 0, 0, 0.35);
+        }
+        .bottom-nav__item {
+            background: transparent;
+            border: none;
+            padding: 8px 4px;
+            min-height: 54px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            text-decoration: none;
+            border-radius: 20px;
+            transition: color 0.2s ease, background 0.2s ease, transform 0.1s ease;
+            font-family: inherit;
+        }
+        .bottom-nav__item .nav-icon {
+            font-size: 20px;
+            line-height: 1;
+        }
+        .bottom-nav__item:hover {
+            color: var(--text-primary);
+            background: rgba(15, 23, 42, 0.05);
+        }
+        body.dark .bottom-nav__item:hover { background: rgba(255, 255, 255, 0.06); }
+        .bottom-nav__item:active { transform: scale(0.96); }
+        .bottom-nav__item.active {
+            background: var(--accent-mint);
+            color: #ffffff;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+        }
+        body.dark .bottom-nav__item.active { color: #0a0a0a; }
+
+        /* 플로팅 nav 위 여백 확보 */
+        body { padding-bottom: 96px; }
+
+        /* [이해원 연구소 교재] */
+        .book-section {
+            margin-top: 28px;
+            padding-top: 22px;
+            border-top: 1px solid var(--card-border);
+            text-align: left;
+        }
+        .book-section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 14px;
+        }
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .book-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            background: var(--inner-section-bg);
+            border: 1px solid var(--inner-section-border);
+            border-radius: 10px;
+            padding: 10px 6px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .book-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+        }
+        .book-thumb {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            background: var(--inner-item-bg);
+            border: 1px solid var(--inner-section-border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+            font-size: 11px;
+            overflow: hidden;
+        }
+        .book-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        @media (max-width: 480px) {
+            .white-box { padding: 25px; }
+            h1 { font-size: 22px; }
+            .timer-display { font-size: 48px; }
+            .timer-buttons { flex-wrap: wrap; }
+            .timer-buttons .btn { flex: 1 1 45%; }
+            .question-cell .num { font-size: 13px; }
+            .question-cell .time { font-size: 9px; }
+            .book-link { font-size: 11px; }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="다크모드 전환">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <div class="container">
+        <img src="https://cdn.imweb.me/thumbnail/20251022/5f0f79023d456.png" alt="INTEGRATE" class="main-logo">
+        <span class="logo-text">INTEGRATE</span>
+
+        <div class="white-box">
+            
+            <div id="main-screen" class="screen active">
+                <h1>이해원 모의고사 Final</h1>
+                <a href="https://integrate.kr/column/?q=YToxOntzOjEyOiJrZXl3b3JkX3R5cGUiO3M6MzoiYWxsIjt9&bmode=view&idx=170013700&t=board" target="_blank" class="btn btn-purple">
+                    타임라인 가이드
+                </a>
+                <button class="btn btn-pink" onclick="showScreen('image')">
+                    단계별 전략 수립
+                </button>
+                <button class="btn btn-mint" onclick="showScreen('timer')">
+                    <span class="emoji">⏱️</span>
+                    100분 타이머
+                </button>
+
+                <div class="book-section">
+                    <p class="book-section-title">📚 이해원 연구소 교재</p>
+                    <div class="book-grid">
+                        <a href="https://sdijbooks.com/books/series/312" target="_blank" class="book-link">
+                            <div class="book-thumb" data-book="한시수"><img src="1.png" alt="한시수"></div>
+                            <span>한시수</span>
+                        </a>
+                        <a href="https://sdijbooks.com/books/series/384" target="_blank" class="book-link">
+                            <div class="book-thumb" data-book="한완수"><img src="2.png" alt="한완수"></div>
+                            <span>한완수</span>
+                        </a>
+                        <a href="https://sdijbooks.com/books/series/383" target="_blank" class="book-link">
+                            <div class="book-thumb" data-book="한완기"><img src="3.png" alt="한완기"></div>
+                            <span>한완기</span>
+                        </a>
+                        <a href="https://sdijbooks.com/books/series/416" target="_blank" class="book-link">
+                            <div class="book-thumb" data-book="한완기 실전편"><img src="4.png" alt="한완기 실전편"></div>
+                            <span>한완기 실전편</span>
+                        </a>
+                        <a href="https://sdijbooks.com/books/series/415" target="_blank" class="book-link">
+                            <div class="book-thumb" data-book="이해원 N제"><img src="5.png" alt="이해원 N제"></div>
+                            <span>이해원 N제</span>
+                        </a>
+                        <a href="https://sdijbooks.com/books/series/335" target="_blank" class="book-link">
+                            <div class="book-thumb" data-book="이해원 모의고사"><img src="6.png" alt="이해원 모의고사"></div>
+                            <span>이해원 모의고사</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="image-screen" class="screen">
+                <h1>단계별 전략 수립</h1>
+                <div class="image-container">
+                    <img src="단계별_전략.png" alt="단계별 전략">
+                    <button class="btn btn-back" onclick="goBackToMain()">
+                        ← 뒤로 가기
+                    </button>
+                </div>
+            </div>
+
+            <div id="timer-screen" class="screen">
+                <h1>⏱️ 100분 타이머</h1>
+                <p class="timer-hint">💡 [시작] 후, 문항 번호를 누르면 해당 문항 풀이가 시작됩니다. 다른 번호를 누르면 이전 문항은 일시 중단되고 새 문항이 시작돼요. (꾹 누르면 회차별 상세 기록)</p>
+                <p class="timer-label">경과 시간</p>
+                <div class="timer-container" id="timer-container">
+                    <div class="breathing-circle"></div>
+                    <div class="timer-display" id="timer-display">00:00</div>
+                </div>
+                <div class="timer-buttons">
+                    <button class="btn btn-start" id="start-btn" onclick="toggleTimer()">
+                        ▶ 시작
+                    </button>
+                    <button class="btn btn-reset" onclick="resetTimer()">
+                        ↺ 리셋
+                    </button>
+                </div>
+
+                <div class="question-grid-section" id="question-grid-section">
+                    <p class="grid-label">공통 (1–22)</p>
+                    <div class="question-grid grid-common" id="grid-common"></div>
+                    <p class="grid-label">선택 (23–30)</p>
+                    <div class="question-grid grid-select" id="grid-select"></div>
+                </div>
+
+                <div class="results-inline" id="results-inline" style="display: none;"></div>
+
+                <button class="btn btn-back" onclick="goBackToMain()">
+                    ← 뒤로 가기
+                </button>
+            </div>
+
+        </div> 
+        
+        <footer class="ig-footer">
+            <div class="ig-footer__sns">
+                <a href="https://www.instagram.com/lhw_math/" target="_blank" class="ig-sns ig-sns--instagram" id="sns-insta">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" ry="5" fill="none" stroke="currentColor" stroke-width="2"></rect><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"></circle><circle cx="17" cy="7" r="1.4" fill="currentColor"></circle></svg>
+                </a>
+                <a href="https://cafe.naver.com/pnmath" target="_blank" class="ig-sns ig-sns--naver" id="sns-naver">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"></rect><path d="M7.5 17.5V6.5h3.1l3.9 6.6V6.5h3v11h-3.1l-3.9-6.6v6.6h-3z" fill="currentColor"></path></svg>
+                </a>
+            </div>
+            <div class="ig-footer__info">
+                <p>주소 : 서울특별시 강남구 선릉로 608 (삼성동, 선진빌딩 6층)</p>
+                <p>㈜ 인터그레이트 | 대표이사: 이해원</p>
+                <p>사업자등록번호: 401-87-02099</p>
+                <p>이메일: <a href="mailto:info@integrate.kr">info@integrate.kr</a></p>
+            </div>
+            <p class="ig-footer__copyright">Copyright © 2025 ㈜ 인터그레이트 All rights reserved.</p>
+        </footer>
+    </div>
+
+    <nav class="bottom-nav" id="bottom-nav">
+        <button type="button" class="bottom-nav__item" data-nav="main" onclick="navTo('main')">
+            <span class="nav-icon">🏠</span>
+            <span>홈</span>
+        </button>
+        <a href="https://integrate.kr/column/?q=YToxOntzOjEyOiJrZXl3b3JkX3R5cGUiO3M6MzoiYWxsIjt9&bmode=view&idx=170013700&t=board" target="_blank" class="bottom-nav__item" data-nav="timeline">
+            <span class="nav-icon">📰</span>
+            <span>타임라인</span>
+        </a>
+        <button type="button" class="bottom-nav__item" data-nav="image" onclick="navTo('image')">
+            <span class="nav-icon">🗺️</span>
+            <span>전략</span>
+        </button>
+        <button type="button" class="bottom-nav__item" data-nav="timer" onclick="navTo('timer')">
+            <span class="nav-icon">⏱️</span>
+            <span>타이머</span>
+        </button>
+    </nav>
+
+    <script>
+        // ==========================================
+        // 다크/라이트 모드 토글 (default: light)
+        // ==========================================
+        (function() {
+            const SUN_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>';
+            const MOON_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+            const toggle = document.getElementById('theme-toggle');
+            function setTheme(isDark) {
+                if (isDark) {
+                    document.body.classList.add('dark');
+                    toggle.innerHTML = SUN_SVG;
+                    toggle.setAttribute('aria-label', '라이트모드 전환');
+                } else {
+                    document.body.classList.remove('dark');
+                    toggle.innerHTML = MOON_SVG;
+                    toggle.setAttribute('aria-label', '다크모드 전환');
+                }
+                try { localStorage.setItem('timer-theme', isDark ? 'dark' : 'light'); } catch (e) {}
+            }
+            let stored = null;
+            try { stored = localStorage.getItem('timer-theme'); } catch (e) {}
+            setTheme(stored === 'dark');
+            toggle.addEventListener('click', function() {
+                setTheme(!document.body.classList.contains('dark'));
+            });
+        })();
+
+        // ==========================================
+        // 화면별 줌 제어
+        // ==========================================
+        function setZoomEnabled(enabled) {
+            const viewport = document.getElementById('viewport-meta');
+            if (enabled) {
+                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes');
+            } else {
+                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+            }
+        }
+
+        // ==========================================
+        // 기존 기능
+        // ==========================================
+        // [임시] 테스트용 30초. 배포 시 `100 * 60`으로 복원할 것.
+        const maxTime = 30;
+        // const maxTime = 100 * 60;
+        let timerInterval = null;
+        let isRunning = false;
+        let startTime = null;
+        let pausedElapsed = 0;
+        let timerEnded = false;
+
+        // 문항별 lap 상태
+        // questionLaps[번호] = [{ start, end, dur } ...] (완료된 회차)
+        let questionLaps = {};
+        let activeQuestion = null;      // 현재 활성 문항 번호 (없으면 null)
+        let activeQuestionStart = null; // 활성 lap 시작 시점 (getElapsedTime() 기준)
+        let currentScreen = 'main';
+        const VALID_SCREENS = new Set(['main', 'image', 'timer']);
+
+        function resolveScreen(rawHash) {
+            const h = (rawHash || '').replace(/^#/, '').toLowerCase();
+            return VALID_SCREENS.has(h) ? h : 'main';
+        }
+
+        function renderScreen(screen) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(screen + '-screen');
+            if (target) target.classList.add('active');
+
+            if (currentScreen === 'timer' && screen !== 'timer') {
+                resetTimer();
+            }
+            currentScreen = screen;
+
+            setZoomEnabled(screen === 'image');
+            updateBottomNav(screen);
+            window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+        }
+
+        function navTo(screen) {
+            const s = VALID_SCREENS.has(screen) ? screen : 'main';
+            const targetHash = s === 'main' ? '' : '#' + s;
+            if (window.location.hash === targetHash || (s === 'main' && !window.location.hash)) {
+                renderScreen(s);
+            } else {
+                window.location.hash = targetHash;
+            }
+        }
+
+        // 기존 onclick="showScreen('...')" 핸들러 호환
+        function showScreen(screen) { navTo(screen); }
+
+        function updateBottomNav(screen) {
+            document.querySelectorAll('.bottom-nav__item').forEach(el => {
+                el.classList.toggle('active', el.dataset.nav === screen);
+            });
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return mins.toString().padStart(2, '0') + ':' + secs.toString().padStart(2, '0');
+        }
+
+        function getElapsedTime() {
+            if (!isRunning || !startTime) return pausedElapsed;
+            const now = Date.now();
+            const elapsed = pausedElapsed + Math.floor((now - startTime) / 1000);
+            return Math.min(elapsed, maxTime);
+        }
+
+        function updateDisplay() {
+            const elapsed = getElapsedTime();
+            document.getElementById('timer-display').textContent = formatTime(elapsed);
+            updateTimerColor(elapsed);
+            renderQuestionCells();
+
+            if (elapsed >= maxTime && isRunning && !timerEnded) {
+                timerEnded = true;
+                clearInterval(timerInterval);
+                pausedElapsed = maxTime;
+                isRunning = false;
+                // 타이머 종료 시 활성 lap 자동 커밋
+                commitActiveLap();
+                activeQuestion = null;
+                activeQuestionStart = null;
+                renderQuestionCells();
+                const btn = document.getElementById('start-btn');
+                btn.textContent = '▶ 시작';
+                btn.className = 'btn btn-start';
+                const container = document.getElementById('timer-container');
+                if (container) container.classList.remove('running');
+                showInlineResults();
+            }
+        }
+
+        function updateTimerColor(elapsed) {
+            const container = document.getElementById('timer-container');
+            if (!container) return;
+            const ratio = maxTime > 0 ? elapsed / maxTime : 0;
+            container.classList.remove('theme-yellow', 'theme-red');
+            if (ratio >= 0.95) {
+                container.classList.add('theme-red');
+            } else if (ratio >= 0.5) {
+                container.classList.add('theme-yellow');
+            }
+        }
+
+        function toggleTimer() {
+            const btn = document.getElementById('start-btn');
+            const container = document.getElementById('timer-container');
+            if (isRunning) {
+                clearInterval(timerInterval);
+                pausedElapsed = getElapsedTime();
+                startTime = null;
+                isRunning = false;
+                btn.textContent = '▶ 시작';
+                btn.className = 'btn btn-start';
+                if (container) container.classList.remove('running');
+            } else {
+                if (getElapsedTime() < maxTime) {
+                    startTime = Date.now();
+                    isRunning = true;
+                    timerEnded = false;
+                    btn.textContent = '⏸ 일시정지';
+                    btn.className = 'btn btn-pause';
+                    if (container) container.classList.add('running');
+                    if (timerInterval) clearInterval(timerInterval);
+                    timerInterval = setInterval(updateDisplay, 500);
+                    updateDisplay();
+                }
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            isRunning = false;
+            startTime = null;
+            pausedElapsed = 0;
+            timerEnded = false;
+            questionLaps = {};
+            activeQuestion = null;
+            activeQuestionStart = null;
+            closeLapPopover();
+            hideInlineResults();
+            const container = document.getElementById('timer-container');
+            if (container) container.classList.remove('running', 'theme-yellow', 'theme-red');
+            updateDisplay();
+            const btn = document.getElementById('start-btn');
+            btn.textContent = '▶ 시작';
+            btn.className = 'btn btn-start';
+        }
+
+        // ==========================================
+        // 문항별 lap 타이머
+        // ==========================================
+        // 각 셀은 배점별 그룹 단위로 정의. id 는 상태 키(questionLaps 키),
+        // label 은 화면 표시용.
+        // 공통(공통과목): 3줄 × 4열
+        //   1~8(2·3점 통합) | 9 | 10 | 11
+        //   12 | 13 | 14 | 15
+        //   16~19(3점 통합) | 20 | 21 | 22
+        // 선택(선택과목): 1줄 × 4열
+        //   23~27(통합) | 28 | 29 | 30
+        const COMMON_CELLS = [
+            { id: '1-8',   label: '1~8'   },
+            { id: '9',     label: '9'     },
+            { id: '10',    label: '10'    },
+            { id: '11',    label: '11'    },
+            { id: '12',    label: '12'    },
+            { id: '13',    label: '13'    },
+            { id: '14',    label: '14'    },
+            { id: '15',    label: '15'    },
+            { id: '16-19', label: '16~19' },
+            { id: '20',    label: '20'    },
+            { id: '21',    label: '21'    },
+            { id: '22',    label: '22'    },
+        ];
+        const SELECT_CELLS = [
+            { id: '23-27', label: '23~27' },
+            { id: '28',    label: '28'    },
+            { id: '29',    label: '29'    },
+            { id: '30',    label: '30'    },
+        ];
+        const CELL_BY_ID = {};
+        [].concat(COMMON_CELLS, SELECT_CELLS).forEach(c => { CELL_BY_ID[c.id] = c; });
+
+        let longPressTimer = null;
+        let longPressTriggered = false;
+
+        function initQuestionGrid() {
+            const commonEl = document.getElementById('grid-common');
+            const selectEl = document.getElementById('grid-select');
+            if (!commonEl || !selectEl) return;
+            commonEl.innerHTML = '';
+            selectEl.innerHTML = '';
+            COMMON_CELLS.forEach(c => commonEl.appendChild(makeQuestionCell(c)));
+            SELECT_CELLS.forEach(c => selectEl.appendChild(makeQuestionCell(c)));
+            renderQuestionCells();
+        }
+
+        function makeQuestionCell(cell) {
+            const el = document.createElement('button');
+            el.type = 'button';
+            el.className = 'question-cell';
+            el.dataset.cellId = cell.id;
+            el.innerHTML = '<span class="badge" data-badge></span><span class="num">' + cell.label + '</span><span class="time" data-time></span>';
+
+            const clearLongPress = () => {
+                if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+            };
+            el.addEventListener('pointerdown', () => {
+                longPressTriggered = false;
+                clearLongPress();
+                longPressTimer = setTimeout(() => {
+                    longPressTriggered = true;
+                    showLapPopover(cell.id);
+                }, 500);
+            });
+            el.addEventListener('pointerup', () => {
+                clearLongPress();
+                if (longPressTriggered) { longPressTriggered = false; return; }
+                toggleQuestion(cell.id);
+            });
+            el.addEventListener('pointerleave', clearLongPress);
+            el.addEventListener('pointercancel', clearLongPress);
+            el.addEventListener('contextmenu', (e) => e.preventDefault());
+            return el;
+        }
+
+        function toggleQuestion(cellId) {
+            if (!isRunning && getElapsedTime() === 0) {
+                alert('타이머를 먼저 시작해주세요.');
+                return;
+            }
+            if (timerEnded) return;
+            if (activeQuestion === cellId) {
+                commitActiveLap();
+                activeQuestion = null;
+                activeQuestionStart = null;
+            } else {
+                commitActiveLap();
+                activeQuestion = cellId;
+                activeQuestionStart = getElapsedTime();
+            }
+            renderQuestionCells();
+        }
+
+        function commitActiveLap() {
+            if (activeQuestion == null || activeQuestionStart == null) return;
+            const end = getElapsedTime();
+            const dur = end - activeQuestionStart;
+            if (dur <= 0) return;
+            if (!questionLaps[activeQuestion]) questionLaps[activeQuestion] = [];
+            questionLaps[activeQuestion].push({ start: activeQuestionStart, end: end, dur: dur });
+        }
+
+        function getQuestionTotal(cellId) {
+            const laps = questionLaps[cellId] || [];
+            let total = laps.reduce((a, b) => a + b.dur, 0);
+            if (activeQuestion === cellId && activeQuestionStart != null) {
+                total += Math.max(0, getElapsedTime() - activeQuestionStart);
+            }
+            return total;
+        }
+
+        function getQuestionVisitCount(cellId) {
+            const count = (questionLaps[cellId] || []).length;
+            return activeQuestion === cellId ? count + 1 : count;
+        }
+
+        function renderQuestionCells() {
+            document.querySelectorAll('.question-cell').forEach(cell => {
+                const id = cell.dataset.cellId;
+                const total = getQuestionTotal(id);
+                const visits = getQuestionVisitCount(id);
+                const isActive = activeQuestion === id;
+                const timeEl = cell.querySelector('[data-time]');
+                const badgeEl = cell.querySelector('[data-badge]');
+                timeEl.textContent = total > 0 ? formatTime(total) : '';
+                cell.classList.toggle('has-time', total > 0);
+                badgeEl.textContent = visits > 1 ? '×' + visits : '';
+                cell.classList.toggle('active', isActive);
+            });
+            const section = document.getElementById('question-grid-section');
+            if (section) section.classList.toggle('disabled', timerEnded);
+        }
+
+        function showLapPopover(cellId) {
+            closeLapPopover();
+            const laps = questionLaps[cellId] || [];
+            const isActive = activeQuestion === cellId;
+            const total = getQuestionTotal(cellId);
+            const label = (CELL_BY_ID[cellId] && CELL_BY_ID[cellId].label) || cellId;
+
+            const backdrop = document.createElement('div');
+            backdrop.className = 'lap-popover-backdrop';
+            backdrop.id = 'lap-popover-backdrop';
+            backdrop.addEventListener('click', (e) => {
+                if (e.target === backdrop) closeLapPopover();
+            });
+
+            let rowsHtml = '';
+            laps.forEach((lap, idx) => {
+                rowsHtml += '<div class="lap-row"><span class="label">' + (idx + 1) + '회차</span><span class="value">' + formatTime(lap.dur) + '</span></div>';
+            });
+            if (isActive && activeQuestionStart != null) {
+                const liveDur = Math.max(0, getElapsedTime() - activeQuestionStart);
+                rowsHtml += '<div class="lap-row active"><span class="label">' + (laps.length + 1) + '회차 (진행 중)</span><span class="value">' + formatTime(liveDur) + '</span></div>';
+            }
+            if (!rowsHtml) {
+                rowsHtml = '<div class="lap-row"><span class="label">기록 없음</span><span class="value">—</span></div>';
+            }
+
+            backdrop.innerHTML = '<div class="lap-popover">' +
+                '<div class="lap-popover-title">' + label + '번 기록</div>' +
+                rowsHtml +
+                '<div class="lap-row total"><span class="label">합계</span><span class="value">' + formatTime(total) + '</span></div>' +
+                '<button class="lap-popover-close" type="button">닫기</button>' +
+                '</div>';
+            document.body.appendChild(backdrop);
+            backdrop.querySelector('.lap-popover-close').addEventListener('click', closeLapPopover);
+        }
+
+        function closeLapPopover() {
+            const el = document.getElementById('lap-popover-backdrop');
+            if (el) el.remove();
+        }
+
+        // 시험 종료 결과 패널 (인라인 — 타이머 화면 내에서 표시)
+        function showInlineResults() {
+            const panel = document.getElementById('results-inline');
+            if (!panel) return;
+
+            let assigned = 0;
+            const buildCellHtml = (c) => {
+                const laps = questionLaps[c.id] || [];
+                const total = laps.reduce((a, b) => a + b.dur, 0);
+                assigned += total;
+                const visits = laps.length;
+                const emptyCls = visits === 0 ? ' empty' : '';
+                const badge = visits > 1 ? '<span class="badge">×' + visits + '</span>' : '';
+
+                let timesHtml = '';
+                if (visits === 0) {
+                    timesHtml = '<div class="result-time muted">—</div>';
+                } else if (visits === 1) {
+                    timesHtml = '<div class="result-time">' + formatTime(laps[0].dur) + '</div>';
+                } else {
+                    laps.forEach((lap, idx) => {
+                        timesHtml += '<div class="result-time"><span class="idx">' + (idx + 1) + '</span>' + formatTime(lap.dur) + '</div>';
+                    });
+                    timesHtml += '<div class="result-time sum">Σ ' + formatTime(total) + '</div>';
+                }
+                return '<div class="result-cell' + emptyCls + '">' +
+                    '<div class="result-label">' + c.label + badge + '</div>' +
+                    '<div class="result-times">' + timesHtml + '</div>' +
+                    '</div>';
+            };
+
+            const commonHtml = COMMON_CELLS.map(buildCellHtml).join('');
+            const selectHtml = SELECT_CELLS.map(buildCellHtml).join('');
+            const elapsed = getElapsedTime();
+            const idle = Math.max(0, elapsed - assigned);
+
+            panel.innerHTML =
+                '<div class="results-inline-title">🔔 문항별 소요 시간</div>' +
+                '<div class="grid-label" style="margin: 0 0 6px; padding: 0 2px;">공통</div>' +
+                '<div class="results-grid">' + commonHtml + '</div>' +
+                '<div class="grid-label" style="margin: 12px 0 6px; padding: 0 2px;">선택</div>' +
+                '<div class="results-grid">' + selectHtml + '</div>' +
+                '<div class="lap-row total"><span class="label">기타 소요 시간</span><span class="value">' + formatTime(idle) + '</span></div>' +
+                '<div class="lap-row total"><span class="label">전체</span><span class="value">' + formatTime(elapsed) + '</span></div>' +
+                '<button class="results-inline-retry" type="button" onclick="resetTimer()">🔄 다시 풀기</button>';
+            panel.style.display = 'block';
+            setTimeout(() => {
+                panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 50);
+        }
+
+        function hideInlineResults() {
+            const panel = document.getElementById('results-inline');
+            if (panel) {
+                panel.style.display = 'none';
+                panel.innerHTML = '';
+            }
+        }
+
+        function goBackToMain() { navTo('main'); }
+
+        function handlePageResume() { if (isRunning) updateDisplay(); }
+        document.addEventListener('visibilitychange', function() { if (!document.hidden) handlePageResume(); });
+        window.addEventListener('focus', handlePageResume);
+        window.addEventListener('pageshow', handlePageResume);
+        window.addEventListener('hashchange', function() {
+            renderScreen(resolveScreen(window.location.hash));
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            initQuestionGrid();
+            renderScreen(resolveScreen(window.location.hash));
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            if (isMobile) {
+                const instaBtn = document.getElementById('sns-insta');
+                if(instaBtn) {
+                    instaBtn.removeAttribute("target");
+                    instaBtn.href = "instagram://user?username=lhw_math";
+                }
+                const naverBtn = document.getElementById('sns-naver');
+                if(naverBtn) {
+                    naverBtn.removeAttribute("target");
+                    naverBtn.href = "navercafe://cafe?cafeId=23380319";
+                }
+            }
+        });
+    </script>
+</body>
+</html>
