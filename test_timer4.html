@@ -266,7 +266,8 @@
         }
         .lap-list .timestamp-number { font-weight: 600; color: var(--accent-mint); font-size: 14px; }
         .lap-list .timestamp-time { font-family: 'Courier New', monospace; font-size: 16px; font-weight: bold; color: var(--text-primary); }
-        .lap-list .timestamp-split { font-family: 'Courier New', monospace; font-size: 12px; color: var(--text-secondary); margin-left: 8px; }
+        .lap-list .timestamp-item.empty { color: var(--text-tertiary); border-left-color: var(--inner-item-border-empty); justify-content: center; }
+        .record-count { font-size: 13px; color: var(--text-tertiary); margin-top: 12px; text-align: right; }
 
         /* 푸터 */
         .ig-footer { padding: 0 12px 20px; }
@@ -441,6 +442,50 @@
             text-shadow: 0 0 24px var(--timer-glow);
             transition: color 0.8s ease, text-shadow 0.8s ease;
         }
+
+        /* [아날로그 시계] */
+        .analog-clock {
+            position: relative;
+            z-index: 1;
+            width: 88%;
+            height: 88%;
+            display: none;
+        }
+        .analog-readout {
+            position: absolute;
+            bottom: -28px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            display: none;
+            letter-spacing: 0.05em;
+        }
+        .timer-container.mode-analog .analog-clock { display: block; }
+        .timer-container.mode-analog .timer-display { display: none; }
+        .timer-container.mode-analog .analog-readout { display: block; }
+        .ac-rim { fill: var(--inner-item-bg); stroke: var(--timer-color); stroke-width: 2; opacity: 0.6; }
+        .ac-markers line { stroke: var(--timer-color); stroke-linecap: round; opacity: 0.6; stroke-width: 1.5; }
+        .ac-markers line.major { stroke-width: 3; opacity: 0.95; }
+        .ac-numbers text {
+            fill: var(--timer-color);
+            font-size: 17px;
+            font-weight: 700;
+            font-family: Georgia, 'Times New Roman', serif;
+        }
+        .ac-hour, .ac-minute {
+            stroke: var(--timer-color);
+            stroke-linecap: round;
+            transform-box: view-box;
+            transform-origin: 100px 100px;
+            transition: transform 0.5s linear;
+        }
+        .ac-hour { stroke-width: 5; }
+        .ac-minute { stroke-width: 3; }
+        .ac-center { fill: var(--timer-color); }
 
         /* [정답표 — 정답 모아보기] */
         .answer-summary {
@@ -880,7 +925,7 @@
                             <label><input type="radio" name="display" value="digital" checked><span>디지털</span></label>
                             <label><input type="radio" name="display" value="analog"><span>아날로그 (10:30~12:10)</span></label>
                         </div>
-                        <span class="opt-hint">※ 아날로그 시계 렌더링은 준비 중입니다.</span>
+                        <span class="opt-hint">※ 시각적인 시계 표시 (시간 진행은 동일).</span>
                     </div>
 
                     <div class="setting-section">
@@ -906,9 +951,23 @@
                 <h1 id="timer-title">⏱️ 100분 타이머</h1>
                 <p class="timer-hint" id="timer-hint">💡 [시작]을 누르면 타이머가 작동합니다.</p>
                 <p class="timer-label">경과 시간</p>
-                <div class="timer-container" id="timer-container">
+                <div class="timer-container mode-digital" id="timer-container">
                     <div class="breathing-circle"></div>
                     <div class="timer-display" id="timer-display">00:00</div>
+                    <svg class="analog-clock" id="analog-clock" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+                        <circle cx="100" cy="100" r="92" class="ac-rim" />
+                        <g class="ac-markers" id="ac-markers"></g>
+                        <g class="ac-numbers">
+                            <text x="100" y="32" text-anchor="middle" dominant-baseline="middle">12</text>
+                            <text x="170" y="100" text-anchor="middle" dominant-baseline="middle">3</text>
+                            <text x="100" y="170" text-anchor="middle" dominant-baseline="middle">6</text>
+                            <text x="30" y="100" text-anchor="middle" dominant-baseline="middle">9</text>
+                        </g>
+                        <line class="ac-hour" id="ac-hour" x1="100" y1="100" x2="100" y2="55" />
+                        <line class="ac-minute" id="ac-minute" x1="100" y1="100" x2="100" y2="35" />
+                        <circle cx="100" cy="100" r="4" class="ac-center" />
+                    </svg>
+                    <div class="analog-readout" id="analog-readout">10:30</div>
                 </div>
                 <div class="timer-buttons">
                     <button class="btn btn-start" id="start-btn" onclick="toggleTimer()">
@@ -919,10 +978,13 @@
                     </button>
                 </div>
 
-                <!-- lap 모드 — 일반 lap 기록 -->
+                <!-- lap 모드 — 단계별 기록 (최대 4회, 사전 정의 라벨) -->
                 <div class="lap-record-container" id="lap-record-container">
-                    <button class="btn btn-record" id="lap-record-btn" type="button" onclick="recordSimpleLap()">⏱️ 기록 (Lap)</button>
-                    <div class="lap-list" id="simple-lap-list"></div>
+                    <button class="btn btn-record" id="lap-record-btn" type="button" onclick="recordSimpleLap()">📌 기록</button>
+                    <div class="lap-list timestamp-list" id="simple-lap-list">
+                        <div class="timestamp-item empty">기록 없음</div>
+                    </div>
+                    <p class="record-count" id="record-count">남은 기록 횟수: 4회</p>
                 </div>
 
                 <!-- 문항별 기록 — 30셀 그리드 -->
@@ -1054,7 +1116,7 @@
         // ==========================================
         // 타이머 기본 상태 / 설정
         // ==========================================
-        const BASE_MAX_TIME = 100 * 60; // 100분 — 빠른 테스트 시 30 등으로 임시 변경
+        const BASE_MAX_TIME = 30; // 테스트용 30초 (배포 시 100*60으로 복원)
         let timerConfig = { mode: 'vanilla', audio: 'none', display: 'digital', speed: 1 };
         function getMaxTime() { return Math.max(1, Math.floor(BASE_MAX_TIME / timerConfig.speed)); }
 
@@ -1069,7 +1131,9 @@
         let activeQuestion = null;
         let activeQuestionStart = null;
 
-        // 일반 lap 상태
+        // 일반 lap 상태 — 단계별 기록 (최대 4회)
+        const MAX_LAP_RECORDS = 4;
+        const LAP_RECORD_LABELS = ['1회독 단계', '2회독 단계', '검토/마무리', '풀이 종료'];
         let simpleLaps = []; // [{ at, dur }]
 
         // 정답 / 차트 상태
@@ -1139,9 +1203,11 @@
             document.getElementById('question-grid-section').style.display = (timerConfig.mode === 'grid') ? 'block' : 'none';
             document.getElementById('time-chart').style.display = (timerConfig.mode === 'vanilla') ? 'none' : 'block';
 
-            // 디스플레이 옵션 (현재는 폰트만 변경)
-            const display = document.getElementById('timer-display');
-            display.style.fontFamily = (timerConfig.display === 'analog') ? 'Georgia, serif' : "'Courier New', monospace";
+            // 디스플레이 옵션 (디지털 / 아날로그)
+            const tc = document.getElementById('timer-container');
+            tc.classList.remove('mode-digital', 'mode-analog');
+            tc.classList.add('mode-' + timerConfig.display);
+            document.getElementById('timer-display').style.fontFamily = "'Courier New', monospace";
 
             // 타이머 제목 / 힌트 갱신
             const minutes = Math.floor(getMaxTime() / 60);
@@ -1180,6 +1246,7 @@
             const elapsed = getElapsedTime();
             document.getElementById('timer-display').textContent = formatTime(elapsed);
             updateTimerColor(elapsed);
+            updateAnalogClock(elapsed);
             if (timerConfig.mode === 'grid') {
                 renderQuestionCells();
             }
@@ -1214,6 +1281,64 @@
             container.classList.remove('theme-yellow', 'theme-red');
             if (ratio >= 0.95) container.classList.add('theme-red');
             else if (ratio >= 0.5) container.classList.add('theme-yellow');
+        }
+
+        // ==========================================
+        // 아날로그 시계 (10:30 → 12:10, 100분 매핑)
+        // ==========================================
+        // SVG 12시간 마커 한 번만 생성
+        function initAnalogMarkers() {
+            const g = document.getElementById('ac-markers');
+            if (!g) return;
+            g.innerHTML = '';
+            const ns = 'http://www.w3.org/2000/svg';
+            for (let i = 0; i < 12; i++) {
+                const angle = (i * 30) * Math.PI / 180;
+                const isMajor = i % 3 === 0;
+                const r1 = 92;
+                const r2 = isMajor ? 80 : 86;
+                const x1 = 100 + Math.sin(angle) * r1;
+                const y1 = 100 - Math.cos(angle) * r1;
+                const x2 = 100 + Math.sin(angle) * r2;
+                const y2 = 100 - Math.cos(angle) * r2;
+                const line = document.createElementNS(ns, 'line');
+                line.setAttribute('x1', x1.toFixed(2));
+                line.setAttribute('y1', y1.toFixed(2));
+                line.setAttribute('x2', x2.toFixed(2));
+                line.setAttribute('y2', y2.toFixed(2));
+                if (isMajor) line.setAttribute('class', 'major');
+                g.appendChild(line);
+            }
+        }
+
+        // 경과 시간(초)을 시침/분침 회전각으로 매핑
+        // - 시작(0초) = 10:30 (시침 315°, 분침 180°)
+        // - 끝(maxTime) = 12:10 (시침 365°/누적, 분침 780°/누적)
+        // - 누적각 사용으로 자정 통과 시 역회전 방지, CSS transition으로 부드럽게
+        function updateAnalogClock(elapsed) {
+            const hourEl = document.getElementById('ac-hour');
+            const minuteEl = document.getElementById('ac-minute');
+            const readoutEl = document.getElementById('analog-readout');
+            if (!hourEl || !minuteEl) return;
+            const max = getMaxTime();
+            const ratio = max > 0 ? Math.min(1, Math.max(0, elapsed / max)) : 0;
+            const examMin = ratio * 100; // 0~100
+            const minuteAngle = 180 + examMin * 6;       // 누적각
+            const hourAngle = 315 + examMin * 0.5;       // 누적각
+            hourEl.style.transform = 'rotate(' + hourAngle.toFixed(2) + 'deg)';
+            minuteEl.style.transform = 'rotate(' + minuteAngle.toFixed(2) + 'deg)';
+
+            // 읽기 보조 텍스트 (현재 표시 시각)
+            if (readoutEl) {
+                const totalMin = 10 * 60 + 30 + examMin; // 분 단위 (실수 가능)
+                const h = Math.floor(totalMin / 60);
+                const m = Math.floor(totalMin % 60);
+                const s = Math.floor((totalMin - Math.floor(totalMin)) * 60);
+                readoutEl.textContent =
+                    String(h).padStart(2, '0') + ':' +
+                    String(m).padStart(2, '0') + ':' +
+                    String(s).padStart(2, '0');
+            }
         }
 
         function toggleTimer() {
@@ -1276,6 +1401,10 @@
         // 일반 lap 기록 (lap 모드)
         // ==========================================
         function recordSimpleLap() {
+            if (simpleLaps.length >= MAX_LAP_RECORDS) {
+                alert('모든 단계가 기록되었습니다.');
+                return;
+            }
             if (!isRunning && getElapsedTime() === 0) {
                 alert('타이머를 먼저 시작해주세요.');
                 return;
@@ -1286,9 +1415,9 @@
             const dur = Math.max(0, elapsed - prev);
             simpleLaps.push({ at: elapsed, dur: dur });
 
-            // chronologicalLaps 재구성
-            chronologicalLaps = simpleLaps.map((l, i, arr) => ({
-                qid: '#' + (i + 1),
+            // chronologicalLaps 재구성 (단계 라벨 사용)
+            chronologicalLaps = simpleLaps.map((l, i) => ({
+                qid: LAP_RECORD_LABELS[i] || ('#' + (i + 1)),
                 dur: l.dur,
                 cumulative: l.at,
                 kind: 'simple'
@@ -1300,19 +1429,24 @@
 
         function renderSimpleLapList() {
             const list = document.getElementById('simple-lap-list');
+            const countEl = document.getElementById('record-count');
+            const recordBtn = document.getElementById('lap-record-btn');
             if (!list) return;
+
             if (simpleLaps.length === 0) {
-                list.innerHTML = '';
-                return;
+                list.innerHTML = '<div class="timestamp-item empty">기록 없음</div>';
+            } else {
+                list.innerHTML = simpleLaps.map((lap, i) => {
+                    const label = LAP_RECORD_LABELS[i] || ((i + 1) + '회차');
+                    return '<div class="timestamp-item">' +
+                        '<span class="timestamp-number">' + label + '</span>' +
+                        '<span class="timestamp-time">' + formatTime(lap.at) + '</span>' +
+                        '</div>';
+                }).join('');
             }
-            list.innerHTML = simpleLaps.slice().reverse().map((lap, idxFromTop) => {
-                const num = simpleLaps.length - idxFromTop;
-                return '<div class="timestamp-item">' +
-                    '<span class="timestamp-number">' + num + '회차</span>' +
-                    '<span><span class="timestamp-time">' + formatTime(lap.at) + '</span>' +
-                    '<span class="timestamp-split">(+' + formatTime(lap.dur) + ')</span></span>' +
-                    '</div>';
-            }).join('');
+            const remaining = MAX_LAP_RECORDS - simpleLaps.length;
+            if (countEl) countEl.textContent = '남은 기록 횟수: ' + remaining + '회';
+            if (recordBtn) recordBtn.disabled = remaining === 0;
         }
 
         // ==========================================
@@ -1724,8 +1858,10 @@
             initQuestionGrid();
             initAnswerSummary();
             initAnswerInputList();
+            initAnalogMarkers();
             renderAnswerSummary();
             renderTimeChart();
+            updateAnalogClock(0);
             renderScreen(resolveScreen(window.location.hash));
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             if (isMobile) {
