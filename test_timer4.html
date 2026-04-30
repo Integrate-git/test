@@ -828,7 +828,7 @@
                             <label><input type="radio" name="audio" value="asmr"><span>ASMR (실제 시험장)</span></label>
                             <label><input type="radio" name="audio" value="hell"><span>HELL (극한 소음)</span></label>
                         </div>
-                        <span class="opt-hint">※ 오디오 재생 기능은 준비 중입니다 (선택만 저장).</span>
+                        <span class="opt-hint">※ '시험 안내방송'만 동작합니다. ASMR/HELL은 준비 중.</span>
                     </div>
 
                     <div class="setting-section">
@@ -1088,6 +1088,9 @@
             tc.classList.add('mode-' + timerConfig.display);
             document.getElementById('timer-display').style.fontFamily = "'Courier New', monospace";
 
+            // 오디오 옵션 — info 모드에서만 파일 프리로드
+            if (timerConfig.audio === 'info') setupAudioFiles();
+
             // 타이머 제목 / 힌트 갱신
             const minutes = Math.floor(getMaxTime() / 60);
             document.getElementById('timer-title').textContent = '⏱️ ' + minutes + '분 타이머';
@@ -1126,6 +1129,7 @@
             document.getElementById('timer-display').textContent = formatTime(elapsed);
             updateTimerColor(elapsed);
             updateAnalogClock(elapsed);
+            checkAudioCues(elapsed);
             if (timerConfig.mode === 'grid') {
                 renderQuestionCells();
             }
@@ -1219,6 +1223,101 @@
             }
         }
 
+        // ==========================================
+        // 오디오 시스템 (시험 안내방송)
+        // ==========================================
+        // 파일은 test_timer4.html과 같은 디렉터리에 위치 (./001.mp3 등)
+        // 큐 시점은 timer-elapsed 초 기준:
+        //   - 001.mp3: 1초
+        //   - 002.mp3: 001.mp3 종료 직후 (chained on 'ended')
+        //   - 003.mp3: 12초
+        //   - 004.mp3: 22초
+        // (현재 BASE_MAX_TIME = 30 테스트 환경 기준. 배포 시 큐 시점도 함께 조정 필요.)
+        const INFO_AUDIO_FILES = ['001.mp3', '002.mp3', '003.mp3', '004.mp3'];
+        const audioElements = {};
+        let firedCues = new Set();
+
+        function setupAudioFiles() {
+            INFO_AUDIO_FILES.forEach(src => {
+                if (audioElements[src]) return;
+                const a = new Audio(src);
+                a.preload = 'auto';
+                a.addEventListener('error', () => {
+                    console.warn('[audio] 로드 실패 — 같은 디렉터리에 ' + src + ' 파일이 있어야 합니다.');
+                });
+                audioElements[src] = a;
+            });
+        }
+
+        function playAudioCue(src) {
+            const a = audioElements[src];
+            if (!a) return;
+            try {
+                a.currentTime = 0;
+                const p = a.play();
+                if (p && p.catch) p.catch(err => console.warn('[audio] 재생 실패:', src, err && err.message));
+            } catch (e) {
+                console.warn('[audio] 재생 예외:', src, e);
+            }
+        }
+
+        function checkAudioCues(elapsed) {
+            if (timerConfig.audio !== 'info' || !isRunning) return;
+            // 1초 — 001.mp3 시작, 종료 직후 002.mp3
+            if (!firedCues.has('001') && elapsed >= 1) {
+                firedCues.add('001');
+                playAudioCue('001.mp3');
+                const a = audioElements['001.mp3'];
+                if (a) {
+                    a.onended = () => {
+                        if (!firedCues.has('002')) {
+                            firedCues.add('002');
+                            playAudioCue('002.mp3');
+                        }
+                    };
+                }
+            }
+            // 12초 — 003.mp3
+            if (!firedCues.has('003') && elapsed >= 12) {
+                firedCues.add('003');
+                playAudioCue('003.mp3');
+            }
+            // 22초 — 004.mp3
+            if (!firedCues.has('004') && elapsed >= 22) {
+                firedCues.add('004');
+                playAudioCue('004.mp3');
+            }
+        }
+
+        function pauseAllAudio() {
+            Object.values(audioElements).forEach(a => {
+                if (!a.paused && !a.ended) {
+                    a.dataset.wasPlaying = '1';
+                    a.pause();
+                }
+            });
+        }
+
+        function resumeAllAudio() {
+            Object.values(audioElements).forEach(a => {
+                if (a.dataset.wasPlaying === '1') {
+                    const p = a.play();
+                    if (p && p.catch) p.catch(() => {});
+                    a.dataset.wasPlaying = '';
+                }
+            });
+        }
+
+        function stopAllAudio() {
+            Object.values(audioElements).forEach(a => {
+                a.pause();
+                a.currentTime = 0;
+                if (a.dataset) delete a.dataset.wasPlaying;
+                a.onended = null;
+            });
+            firedCues = new Set();
+        }
+
         function toggleTimer() {
             const btn = document.getElementById('start-btn');
             const container = document.getElementById('timer-container');
@@ -1230,6 +1329,7 @@
                 btn.textContent = '▶ 시작';
                 btn.className = 'btn btn-start';
                 if (container) container.classList.remove('running');
+                pauseAllAudio();
             } else {
                 if (getElapsedTime() < getMaxTime()) {
                     startTime = Date.now();
@@ -1240,6 +1340,7 @@
                     if (container) container.classList.add('running');
                     if (timerInterval) clearInterval(timerInterval);
                     timerInterval = setInterval(updateDisplay, 500);
+                    resumeAllAudio();
                     updateDisplay();
                 }
             }
@@ -1263,6 +1364,7 @@
             closeAnswerPopover();
             hideInlineResults();
             renderSimpleLapList();
+            stopAllAudio();
 
             const container = document.getElementById('timer-container');
             if (container) container.classList.remove('running', 'theme-yellow', 'theme-red');
