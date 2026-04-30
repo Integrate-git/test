@@ -566,23 +566,7 @@
         .ac-minute { stroke-width: 3; }
         .ac-center { fill: var(--timer-color); }
 
-        /* [정답표 — 정답 모아보기] */
-        .answer-summary {
-            margin-top: 16px;
-            padding: 14px;
-            background: var(--inner-section-bg);
-            border: 1px solid var(--inner-section-border);
-            border-radius: 12px;
-            text-align: left;
-            transition: background 0.3s ease, border-color 0.3s ease;
-        }
-        .answer-summary-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
-            letter-spacing: 0.02em;
-        }
+        /* [정답 모아보기 — 결과 패널 내부에서만 사용] */
         .answer-summary-grid {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
@@ -606,96 +590,6 @@
         .answer-summary-cell .ans-val { color: var(--accent-mint); font-weight: 700; font-size: 13px; }
         .answer-summary-cell.empty .ans-val { color: var(--text-tertiary); font-weight: 400; }
         .answer-summary-cell.text .ans-val { font-size: 11px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 2px; }
-
-        /* [정답 입력 패널] */
-        .answer-input-panel {
-            margin-top: 16px;
-            padding: 14px;
-            background: var(--inner-section-bg);
-            border: 1px solid var(--inner-section-border);
-            border-radius: 12px;
-            text-align: left;
-        }
-        .answer-input-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
-            letter-spacing: 0.02em;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .answer-input-toggle {
-            background: transparent;
-            border: 1px solid var(--inner-section-border);
-            color: var(--text-secondary);
-            font-size: 11px;
-            padding: 4px 10px;
-            border-radius: 999px;
-            cursor: pointer;
-            font-family: inherit;
-        }
-        .answer-input-toggle:hover { color: var(--text-primary); border-color: var(--accent-mint); }
-        .answer-input-list {
-            max-height: 360px;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
-        .answer-input-list.collapsed { display: none; }
-        .answer-row {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            padding: 6px 0;
-            border-bottom: 1px solid var(--inner-section-border);
-        }
-        .answer-row:last-child { border-bottom: none; }
-        .answer-row .qnum {
-            width: 34px;
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-secondary);
-            flex-shrink: 0;
-        }
-        .answer-row .ans-chip {
-            width: 28px;
-            height: 28px;
-            min-width: 28px;
-            border: 1px solid var(--inner-section-border);
-            background: var(--inner-item-bg);
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-primary);
-            cursor: pointer;
-            font-family: inherit;
-            transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
-        }
-        .answer-row .ans-chip:hover { border-color: var(--accent-mint); }
-        .answer-row .ans-chip:active { transform: scale(0.94); }
-        .answer-row .ans-chip.selected {
-            background: var(--accent-mint);
-            color: #ffffff;
-            border-color: var(--accent-mint);
-        }
-        body.dark .answer-row .ans-chip.selected { color: #0a0a0a; }
-        .answer-row .ans-text {
-            flex: 1;
-            min-width: 60px;
-            margin-left: 4px;
-            padding: 5px 8px;
-            border: 1px solid var(--inner-section-border);
-            background: var(--inner-item-bg);
-            border-radius: 6px;
-            font-size: 12px;
-            color: var(--text-primary);
-            font-family: inherit;
-            outline: none;
-            transition: border-color 0.15s ease;
-        }
-        .answer-row .ans-text:focus { border-color: var(--accent-mint); }
-        .answer-row .ans-text.has-value { background: var(--inner-section-bg); border-color: var(--accent-mint); }
 
         /* [인라인 결과 패널] */
         .results-inline {
@@ -842,8 +736,6 @@
             .book-link { font-size: 11px; }
             .answer-summary-cell .ans-num { font-size: 8px; }
             .answer-summary-cell .ans-val { font-size: 12px; }
-            .answer-row .qnum { width: 28px; font-size: 11px; }
-            .answer-row .ans-chip { width: 24px; height: 24px; min-width: 24px; font-size: 11px; }
             .setting-options { grid-template-columns: repeat(auto-fit, minmax(95px, 1fr)); }
             .setting-options label { padding: 10px 6px; font-size: 12px; }
         }
@@ -1013,21 +905,6 @@
                     <div class="question-grid grid-common" id="grid-common"></div>
                     <p class="grid-label">선택 (23~30)</p>
                     <div class="question-grid grid-select" id="grid-select"></div>
-                </div>
-
-                <!-- 정답표 (정답 모아보기) -->
-                <div class="answer-summary" id="answer-summary">
-                    <div class="answer-summary-title">📝 정답 모아보기</div>
-                    <div class="answer-summary-grid" id="answer-summary-grid"></div>
-                </div>
-
-                <!-- 정답 입력 패널 -->
-                <div class="answer-input-panel" id="answer-input-panel">
-                    <div class="answer-input-title">
-                        <span>✍️ 전체 문제 목록</span>
-                        <button type="button" class="answer-input-toggle" id="answer-input-toggle" onclick="toggleAnswerInputList()">접기</button>
-                    </div>
-                    <div class="answer-input-list" id="answer-input-list"></div>
                 </div>
 
                 <div class="results-inline" id="results-inline" style="display: none;"></div>
@@ -1202,12 +1079,8 @@
             };
 
             // 모드별 컨테이너 표시/숨김
-            const isGrid = timerConfig.mode === 'grid';
             document.getElementById('lap-record-container').style.display = (timerConfig.mode === 'lap') ? 'block' : 'none';
-            document.getElementById('question-grid-section').style.display = isGrid ? 'block' : 'none';
-            // grid 모드: 정답 모아보기 및 하단 정답입력 패널은 시험 중 숨김 (시험 종료 후 결과에 포함)
-            document.getElementById('answer-summary').style.display = isGrid ? 'none' : 'block';
-            document.getElementById('answer-input-panel').style.display = isGrid ? 'none' : 'block';
+            document.getElementById('question-grid-section').style.display = (timerConfig.mode === 'grid') ? 'block' : 'none';
 
             // 디스플레이 옵션 (디지털 / 아날로그)
             const tc = document.getElementById('timer-container');
@@ -1390,8 +1263,6 @@
             closeAnswerPopover();
             hideInlineResults();
             renderSimpleLapList();
-            renderAnswerSummary();
-            renderAnswerInputList();
 
             const container = document.getElementById('timer-container');
             if (container) container.classList.remove('running', 'theme-yellow', 'theme-red');
@@ -1632,12 +1503,10 @@
                     const sel = String(currentVal) === String(v) ? ' selected' : '';
                     chips += '<button type="button" class="ans-popover-chip' + sel + '" data-val="' + v + '">' + v + '</button>';
                 }
-                bodyHtml = '<div class="ans-popover-chips">' + chips + '</div>' +
-                    '<div class="ans-popover-hint">5지선다 객관식 — 다시 누르면 해제</div>';
+                bodyHtml = '<div class="ans-popover-chips">' + chips + '</div>';
             } else {
                 const numericVal = (/^\d+$/.test(currentVal) && parseInt(currentVal, 10) >= 1 && parseInt(currentVal, 10) <= 999) ? currentVal : '';
-                bodyHtml = '<input type="number" class="ans-popover-text" id="ans-popover-input" min="1" max="999" inputmode="numeric" placeholder="1 ~ 999" value="' + numericVal + '">' +
-                    '<div class="ans-popover-hint">주관식 (1 ~ 999)</div>';
+                bodyHtml = '<input type="number" class="ans-popover-text" id="ans-popover-input" min="1" max="999" inputmode="numeric" value="' + numericVal + '">';
             }
 
             backdrop.innerHTML = '<div class="lap-popover answer-popover">' +
@@ -1655,17 +1524,8 @@
             if (qType === 'mc') {
                 popover.querySelectorAll('.ans-popover-chip').forEach(chip => {
                     chip.addEventListener('click', () => {
-                        const val = chip.dataset.val;
-                        const cur = questionAnswers[String(qNum)];
-                        if (String(cur) === String(val)) {
-                            setAnswer(qNum, null);
-                        } else {
-                            setAnswer(qNum, val);
-                        }
-                        const newVal = questionAnswers[String(qNum)];
-                        popover.querySelectorAll('.ans-popover-chip').forEach(c => {
-                            c.classList.toggle('selected', String(newVal) === c.dataset.val);
-                        });
+                        setAnswer(qNum, chip.dataset.val);
+                        closeAnswerPopover();
                     });
                 });
             } else {
@@ -1705,89 +1565,8 @@
         }
 
         // ==========================================
-        // 정답표 (정답 모아보기)
+        // 정답 상태 관리 (questionAnswers 업데이트만)
         // ==========================================
-        function initAnswerSummary() {
-            const grid = document.getElementById('answer-summary-grid');
-            if (!grid) return;
-            grid.innerHTML = '';
-            for (let q = 1; q <= 30; q++) {
-                const cell = document.createElement('div');
-                cell.className = 'answer-summary-cell empty';
-                cell.dataset.q = String(q);
-                cell.innerHTML = '<span class="ans-num">' + q + '</span><span class="ans-val">−</span>';
-                grid.appendChild(cell);
-            }
-        }
-
-        function renderAnswerSummary() {
-            const grid = document.getElementById('answer-summary-grid');
-            if (!grid) return;
-            for (let q = 1; q <= 30; q++) {
-                const cell = grid.querySelector('[data-q="' + q + '"]');
-                if (!cell) continue;
-                const v = questionAnswers[String(q)];
-                const valEl = cell.querySelector('.ans-val');
-                if (v == null || v === '') {
-                    cell.classList.add('empty');
-                    cell.classList.remove('text');
-                    valEl.textContent = '−';
-                } else {
-                    cell.classList.remove('empty');
-                    if (/^[1-5]$/.test(String(v))) {
-                        cell.classList.remove('text');
-                        valEl.textContent = String(v);
-                    } else {
-                        cell.classList.add('text');
-                        valEl.textContent = String(v);
-                    }
-                }
-            }
-        }
-
-        // ==========================================
-        // 정답 입력 패널
-        // ==========================================
-        function initAnswerInputList() {
-            const list = document.getElementById('answer-input-list');
-            if (!list) return;
-            list.innerHTML = '';
-            for (let q = 1; q <= 30; q++) {
-                const row = document.createElement('div');
-                row.className = 'answer-row';
-                row.dataset.q = String(q);
-                let chipsHtml = '';
-                for (let v = 1; v <= 5; v++) {
-                    chipsHtml += '<button type="button" class="ans-chip" data-val="' + v + '">' + v + '</button>';
-                }
-                row.innerHTML =
-                    '<span class="qnum">' + q + '번</span>' +
-                    chipsHtml +
-                    '<input type="text" class="ans-text" placeholder="주관식" inputmode="text" maxlength="20">';
-                list.appendChild(row);
-
-                // 칩 핸들러
-                row.querySelectorAll('.ans-chip').forEach(chip => {
-                    chip.addEventListener('click', () => {
-                        const val = chip.dataset.val;
-                        const cur = questionAnswers[String(q)];
-                        if (String(cur) === String(val)) {
-                            // 같은 값 다시 누르면 해제
-                            setAnswer(q, null);
-                        } else {
-                            setAnswer(q, val);
-                        }
-                    });
-                });
-                // 주관식 입력
-                const textInput = row.querySelector('.ans-text');
-                textInput.addEventListener('input', (e) => {
-                    const v = e.target.value.trim();
-                    setAnswer(q, v === '' ? null : v);
-                });
-            }
-        }
-
         function setAnswer(qNum, value) {
             const key = String(qNum);
             if (value == null || value === '') {
@@ -1795,42 +1574,6 @@
             } else {
                 questionAnswers[key] = String(value);
             }
-            renderAnswerInputRow(qNum);
-            renderAnswerSummary();
-        }
-
-        function renderAnswerInputRow(qNum) {
-            const row = document.querySelector('.answer-row[data-q="' + qNum + '"]');
-            if (!row) return;
-            const v = questionAnswers[String(qNum)];
-            row.querySelectorAll('.ans-chip').forEach(chip => {
-                chip.classList.toggle('selected', String(v) === chip.dataset.val);
-            });
-            const textInput = row.querySelector('.ans-text');
-            if (textInput) {
-                if (v == null) {
-                    if (textInput.value !== '') textInput.value = '';
-                    textInput.classList.remove('has-value');
-                } else if (/^[1-5]$/.test(v)) {
-                    if (textInput.value !== '') textInput.value = '';
-                    textInput.classList.remove('has-value');
-                } else {
-                    if (textInput.value !== v) textInput.value = v;
-                    textInput.classList.add('has-value');
-                }
-            }
-        }
-
-        function renderAnswerInputList() {
-            for (let q = 1; q <= 30; q++) renderAnswerInputRow(q);
-        }
-
-        function toggleAnswerInputList() {
-            const list = document.getElementById('answer-input-list');
-            const btn = document.getElementById('answer-input-toggle');
-            if (!list || !btn) return;
-            const collapsed = list.classList.toggle('collapsed');
-            btn.textContent = collapsed ? '펼치기' : '접기';
         }
 
         // ==========================================
@@ -1925,10 +1668,7 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             initQuestionGrid();
-            initAnswerSummary();
-            initAnswerInputList();
             initAnalogMarkers();
-            renderAnswerSummary();
             updateAnalogClock(0);
             renderScreen(resolveScreen(window.location.hash));
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
