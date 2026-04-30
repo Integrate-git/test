@@ -762,19 +762,10 @@
         .book-section-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 14px; }
         .book-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .book-link {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            background: var(--inner-section-bg);
-            border: 1px solid var(--inner-section-border);
+            display: block;
             border-radius: 10px;
-            padding: 10px 6px;
+            overflow: hidden;
             text-decoration: none;
-            color: var(--text-primary);
-            font-size: 12px;
-            font-weight: 600;
-            text-align: center;
             transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
         .book-link:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08); }
@@ -783,12 +774,7 @@
             aspect-ratio: 3 / 4;
             background: var(--inner-item-bg);
             border: 1px solid var(--inner-section-border);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-tertiary);
-            font-size: 11px;
+            border-radius: 10px;
             overflow: hidden;
         }
         .book-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -801,7 +787,6 @@
             .timer-buttons .btn { flex: 1 1 45%; }
             .question-cell .num { font-size: 13px; }
             .question-cell .time { font-size: 9px; }
-            .book-link { font-size: 11px; }
             .answer-summary-cell .ans-num { font-size: 8px; }
             .answer-summary-cell .ans-val { font-size: 12px; }
             .setting-options { grid-template-columns: repeat(auto-fit, minmax(95px, 1fr)); }
@@ -836,29 +821,23 @@
                 <div class="book-section">
                     <p class="book-section-title">📚 이해원 연구소 교재</p>
                     <div class="book-grid">
-                        <a href="https://sdijbooks.com/books/series/312" target="_blank" class="book-link">
-                            <div class="book-thumb" data-book="한시수"><img src="1.png" alt="한시수"></div>
-                            <span>한시수</span>
+                        <a href="https://sdijbooks.com/books/series/312" target="_blank" class="book-link" aria-label="한시수">
+                            <div class="book-thumb"><img src="1.png" alt="한시수"></div>
                         </a>
-                        <a href="https://sdijbooks.com/books/series/384" target="_blank" class="book-link">
-                            <div class="book-thumb" data-book="한완수"><img src="2.png" alt="한완수"></div>
-                            <span>한완수</span>
+                        <a href="https://sdijbooks.com/books/series/384" target="_blank" class="book-link" aria-label="한완수">
+                            <div class="book-thumb"><img src="2.png" alt="한완수"></div>
                         </a>
-                        <a href="https://sdijbooks.com/books/series/383" target="_blank" class="book-link">
-                            <div class="book-thumb" data-book="한완기"><img src="3.png" alt="한완기"></div>
-                            <span>한완기</span>
+                        <a href="https://sdijbooks.com/books/series/383" target="_blank" class="book-link" aria-label="한완기">
+                            <div class="book-thumb"><img src="3.png" alt="한완기"></div>
                         </a>
-                        <a href="https://sdijbooks.com/books/series/416" target="_blank" class="book-link">
-                            <div class="book-thumb" data-book="한완기 실전편"><img src="4.png" alt="한완기 실전편"></div>
-                            <span>한완기 실전편</span>
+                        <a href="https://sdijbooks.com/books/series/416" target="_blank" class="book-link" aria-label="한완기 실전편">
+                            <div class="book-thumb"><img src="4.png" alt="한완기 실전편"></div>
                         </a>
-                        <a href="https://sdijbooks.com/books/series/415" target="_blank" class="book-link">
-                            <div class="book-thumb" data-book="이해원 N제"><img src="5.png" alt="이해원 N제"></div>
-                            <span>이해원 N제</span>
+                        <a href="https://sdijbooks.com/books/series/415" target="_blank" class="book-link" aria-label="이해원 N제">
+                            <div class="book-thumb"><img src="5.png" alt="이해원 N제"></div>
                         </a>
-                        <a href="https://sdijbooks.com/books/series/335" target="_blank" class="book-link">
-                            <div class="book-thumb" data-book="이해원 모의고사"><img src="6.png" alt="이해원 모의고사"></div>
-                            <span>이해원 모의고사</span>
+                        <a href="https://sdijbooks.com/books/series/335" target="_blank" class="book-link" aria-label="이해원 모의고사">
+                            <div class="book-thumb"><img src="6.png" alt="이해원 모의고사"></div>
                         </a>
                     </div>
                 </div>
