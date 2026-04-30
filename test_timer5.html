@@ -226,6 +226,74 @@
             font-size: 11px;
             color: var(--text-tertiary);
         }
+        .setting-section .sub-label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin: 12px 2px 6px;
+            letter-spacing: 0.02em;
+        }
+        .setting-section .sub-label:first-of-type { margin-top: 4px; }
+        .grading-options {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px dashed var(--inner-section-border);
+        }
+        .setting-options label.disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        /* [채점 결과 점수 표시] */
+        .score-display {
+            text-align: center;
+            margin: 6px 0 16px;
+            padding: 14px 12px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--inner-section-border);
+        }
+        .score-total {
+            font-size: 40px;
+            font-weight: 900;
+            color: var(--accent-mint);
+            font-family: 'Courier New', monospace;
+            line-height: 1;
+        }
+        .score-max {
+            font-size: 18px;
+            color: var(--text-secondary);
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+        .score-correct {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        /* [채점된 정답 셀 색상] */
+        .answer-summary-cell.correct {
+            background: rgba(35, 227, 115, 0.15);
+            border-color: var(--accent-mint);
+        }
+        .answer-summary-cell.correct .ans-val { color: var(--accent-mint); }
+        .answer-summary-cell.incorrect {
+            background: rgba(239, 68, 68, 0.12);
+            border-color: #ef4444;
+        }
+        .answer-summary-cell.incorrect .ans-val { color: #ef4444; }
+        .answer-summary-cell .ans-mark {
+            font-size: 9px;
+            margin-top: 2px;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .answer-summary-cell.correct .ans-mark { color: var(--accent-mint); }
+        .answer-summary-cell.incorrect .ans-mark { color: #ef4444; }
+        .answer-summary-cell.empty .ans-mark { color: var(--text-tertiary); }
 
         /* 타이머 스타일 */
         .timer-display {
@@ -818,29 +886,43 @@
                             <label><input type="radio" name="mode" value="lap"><span>일반 lap 기록</span></label>
                             <label><input type="radio" name="mode" value="grid"><span>문항별 기록</span></label>
                         </div>
+
+                        <!-- 문항별 기록 선택 시 펼쳐지는 채점 옵션 -->
+                        <div class="grading-options" id="grading-options" style="display: none;">
+                            <span class="sub-label">시험 모드</span>
+                            <div class="setting-options">
+                                <label><input type="radio" name="round" value="default" checked><span>기본 (채점 X)</span></label>
+                                <label><input type="radio" name="round" value="0회"><span>Final 0회</span></label>
+                                <label class="disabled"><input type="radio" name="round" value="1회" disabled><span>Final 1회 (준비중)</span></label>
+                            </div>
+                            <span class="sub-label">선택과목</span>
+                            <div class="setting-options">
+                                <label><input type="radio" name="subject" value="확률과통계" checked><span>확률과통계</span></label>
+                                <label><input type="radio" name="subject" value="미적분"><span>미적분</span></label>
+                                <label><input type="radio" name="subject" value="기하"><span>기하</span></label>
+                            </div>
+                            <span class="opt-hint">※ Final 0회는 모든 선택과목 정답이 동일합니다 (실제 정답 미확정).</span>
+                        </div>
                     </div>
 
                     <div class="setting-section">
-                        <h3>2. 시험 안내방송</h3>
+                        <h3>2. 오디오</h3>
+                        <span class="sub-label">시험 안내방송</span>
                         <div class="setting-options">
                             <label><input type="radio" name="info" value="none" checked><span>무음</span></label>
                             <label><input type="radio" name="info" value="on"><span>안내방송 ON</span></label>
                         </div>
-                        <span class="opt-hint">※ 시험 시작·종료 안내방송이 자동 재생됩니다 (mp3 파일 필요).</span>
-                    </div>
-
-                    <div class="setting-section">
-                        <h3>3. ASMR (시험장 분위기)</h3>
+                        <span class="sub-label">ASMR (시험장 분위기)</span>
                         <div class="setting-options">
                             <label><input type="radio" name="asmr" value="none" checked><span>무음</span></label>
                             <label><input type="radio" name="asmr" value="basic"><span>기본</span></label>
                             <label><input type="radio" name="asmr" value="hell"><span>HELL</span></label>
                         </div>
-                        <span class="opt-hint">※ 준비 중 — 선택만 저장됩니다.</span>
+                        <span class="opt-hint">※ 안내방송 ON은 동작합니다. ASMR/HELL은 준비 중.</span>
                     </div>
 
                     <div class="setting-section">
-                        <h3>4. 디스플레이</h3>
+                        <h3>3. 디스플레이</h3>
                         <div class="setting-options">
                             <label><input type="radio" name="display" value="digital" checked><span>디지털</span></label>
                             <label><input type="radio" name="display" value="analog"><span>아날로그 (10:30~12:10)</span></label>
@@ -849,7 +931,7 @@
                     </div>
 
                     <div class="setting-section">
-                        <h3>5. 타임 어택</h3>
+                        <h3>4. 타임 어택</h3>
                         <div class="setting-options">
                             <label><input type="radio" name="speed" value="1" checked><span>기본 (100분)</span></label>
                             <label><input type="radio" name="speed" value="1.111"><span>10% 단축 (90분)</span></label>
@@ -1007,7 +1089,12 @@
         // ==========================================
         const BASE_MAX_TIME = 30; // 테스트용 30초 (배포 시 100*60으로 복원)
         // 오디오는 두 축으로 분리: info (none/on) × asmr (none/basic/hell) = 6개 조합
-        let timerConfig = { mode: 'vanilla', info: 'none', asmr: 'none', display: 'digital', speed: 1 };
+        // 채점은 round (default/0회/1회) × subject (확률과통계/미적분/기하)
+        let timerConfig = {
+            mode: 'vanilla', info: 'none', asmr: 'none',
+            display: 'digital', speed: 1,
+            round: 'default', subject: '확률과통계'
+        };
         function getMaxTime() { return Math.max(1, Math.floor(BASE_MAX_TIME / timerConfig.speed)); }
 
         let timerInterval = null;
@@ -1080,12 +1167,16 @@
         // ==========================================
         function applySettingsAndStart() {
             const form = document.getElementById('timer-settings-form');
+            const roundEl = form.querySelector('input[name="round"]:checked');
+            const subjectEl = form.querySelector('input[name="subject"]:checked');
             timerConfig = {
                 mode: form.querySelector('input[name="mode"]:checked').value,
                 info: form.querySelector('input[name="info"]:checked').value,
                 asmr: form.querySelector('input[name="asmr"]:checked').value,
                 display: form.querySelector('input[name="display"]:checked').value,
-                speed: parseFloat(form.querySelector('input[name="speed"]:checked').value)
+                speed: parseFloat(form.querySelector('input[name="speed"]:checked').value),
+                round: roundEl ? roundEl.value : 'default',
+                subject: subjectEl ? subjectEl.value : '확률과통계'
             };
 
             // 모드별 컨테이너 표시/숨김
@@ -1690,6 +1781,68 @@
         }
 
         // ==========================================
+        // 자동 채점 — 정답 데이터 / 배점 / 채점
+        // ==========================================
+        // Final 0회: 실제 정답 미확정 → 모든 선택과목 통일된 임시 정답
+        const ANSWER_KEYS = {
+            '0회': {
+                common: [1,2,3,4,5,1,2,3,4,5,1,2,3,4,5,16,17,18,19,20,21,22], // 1~22번
+                select: {
+                    '확률과통계': [1,2,3,4,5,1,29,30], // 23~30번
+                    '미적분':     [1,2,3,4,5,1,29,30],
+                    '기하':       [1,2,3,4,5,1,29,30]
+                }
+            }
+            // '1회': null  // 추후 정답 확정되면 추가
+        };
+
+        // 30번까지의 정답 배열 반환 (1번 = index 0)
+        function getAnswerKey(round, subject) {
+            const data = ANSWER_KEYS[round];
+            if (!data) return null;
+            const select = data.select[subject];
+            if (!select) return null;
+            return data.common.concat(select);
+        }
+
+        // 수능 수학 배점:
+        //   2점: 1, 2, 23
+        //   3점: 3~8, 16~19, 24~27
+        //   4점: 9~15, 20~22, 28~30
+        function getQuestionScore(qNum) {
+            const n = parseInt(qNum, 10);
+            if (n === 1 || n === 2 || n === 23) return 2;
+            if ((n >= 3 && n <= 8) || (n >= 16 && n <= 19) || (n >= 24 && n <= 27)) return 3;
+            return 4;
+        }
+
+        // 30문항 채점 결과 — { perQuestion: [{q, user, correct, isCorrect, score}], totalScore, correctCount }
+        function gradeAnswers() {
+            const round = timerConfig.round;
+            if (!round || round === 'default') return null;
+            const key = getAnswerKey(round, timerConfig.subject);
+            if (!key) return null;
+
+            const perQuestion = [];
+            let totalScore = 0;
+            let correctCount = 0;
+            for (let q = 1; q <= 30; q++) {
+                const user = questionAnswers[String(q)];
+                const correct = key[q - 1];
+                const userStr = user == null ? '' : String(user).trim();
+                const correctStr = String(correct).trim();
+                const isCorrect = userStr !== '' && userStr === correctStr;
+                const score = isCorrect ? getQuestionScore(q) : 0;
+                if (isCorrect) {
+                    totalScore += score;
+                    correctCount++;
+                }
+                perQuestion.push({ q: q, user: userStr, correct: correctStr, isCorrect: isCorrect, score: score });
+            }
+            return { perQuestion: perQuestion, totalScore: totalScore, correctCount: correctCount };
+        }
+
+        // ==========================================
         // 시험 종료 결과 패널 (grid 모드)
         // ==========================================
         function showInlineResults() {
@@ -1726,6 +1879,19 @@
             const elapsed = getElapsedTime();
             const idle = Math.max(0, elapsed - assigned);
 
+            // 채점 결과 (시험 모드가 default가 아닐 때)
+            const grade = gradeAnswers();
+            let scoreHeaderHtml = '';
+            if (grade) {
+                scoreHeaderHtml =
+                    '<div class="score-display">' +
+                    '<span class="score-total">' + grade.totalScore + '</span>' +
+                    '<span class="score-max">/100</span>' +
+                    '<span class="score-correct">정답 ' + grade.correctCount + ' / 30 · ' +
+                    timerConfig.round + ' · ' + timerConfig.subject + '</span>' +
+                    '</div>';
+            }
+
             // 정답 모아보기 (시험 종료 후)
             let answerSummaryHtml = '<div class="answer-summary-grid" style="margin-bottom: 16px;">';
             for (let q = 1; q <= 30; q++) {
@@ -1733,18 +1899,39 @@
                 const isEmpty = v == null || v === '';
                 const display = isEmpty ? '−' : String(v);
                 let cellCls = 'answer-summary-cell';
-                if (isEmpty) cellCls += ' empty';
-                else if (!/^[1-5]$/.test(String(v))) cellCls += ' text';
+                let markHtml = '';
+
+                if (grade) {
+                    const g = grade.perQuestion[q - 1];
+                    if (g.isCorrect) {
+                        cellCls += ' correct';
+                        markHtml = '<span class="ans-mark">✓</span>';
+                    } else if (isEmpty) {
+                        cellCls += ' empty';
+                        markHtml = '<span class="ans-mark">→' + g.correct + '</span>';
+                    } else {
+                        cellCls += ' incorrect';
+                        if (!/^[1-5]$/.test(String(v))) cellCls += ' text';
+                        markHtml = '<span class="ans-mark">→' + g.correct + '</span>';
+                    }
+                } else {
+                    if (isEmpty) cellCls += ' empty';
+                    else if (!/^[1-5]$/.test(String(v))) cellCls += ' text';
+                }
+
                 answerSummaryHtml +=
                     '<div class="' + cellCls + '">' +
                     '<span class="ans-num">' + q + '</span>' +
                     '<span class="ans-val">' + display + '</span>' +
+                    markHtml +
                     '</div>';
             }
             answerSummaryHtml += '</div>';
 
+            const summaryTitle = grade ? '🎯 채점 결과' : '📝 정답 모아보기';
             panel.innerHTML =
-                '<div class="results-inline-title">📝 정답 모아보기</div>' +
+                '<div class="results-inline-title">' + summaryTitle + '</div>' +
+                scoreHeaderHtml +
                 answerSummaryHtml +
                 '<div class="results-inline-title" style="margin-top: 18px;">🔔 문항별 소요 시간</div>' +
                 '<div class="grid-label" style="margin: 0 0 6px; padding: 0 2px;">공통 (1~22)</div>' +
@@ -1779,10 +1966,23 @@
             renderScreen(resolveScreen(window.location.hash));
         });
 
+        // 설정 페이지에서 '문항별 기록' 선택 시 채점 옵션 sub-section 표시
+        function refreshGradingVisibility() {
+            const checked = document.querySelector('input[name="mode"]:checked');
+            const section = document.getElementById('grading-options');
+            if (!section || !checked) return;
+            section.style.display = checked.value === 'grid' ? 'block' : 'none';
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             initQuestionGrid();
             initAnalogMarkers();
             updateAnalogClock(0);
+            // 모드 변경 리스너 (채점 옵션 펼침/접힘)
+            document.querySelectorAll('input[name="mode"]').forEach(input => {
+                input.addEventListener('change', refreshGradingVisibility);
+            });
+            refreshGradingVisibility();
             renderScreen(resolveScreen(window.location.hash));
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             if (isMobile) {
