@@ -385,6 +385,85 @@
         }
         .lap-popover-close:hover { filter: brightness(1.1); }
 
+        /* [정답 입력 팝오버 — 문항 클릭 시 플로팅] */
+        .answer-popover { min-width: 280px; }
+        .ans-popover-chips {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin: 14px 0 10px;
+        }
+        .ans-popover-chip {
+            aspect-ratio: 1;
+            border: 1.5px solid var(--inner-section-border);
+            background: var(--inner-item-bg);
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-family: inherit;
+            -webkit-tap-highlight-color: transparent;
+            transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
+        }
+        .ans-popover-chip:hover { border-color: var(--accent-mint); }
+        .ans-popover-chip:active { transform: scale(0.92); }
+        .ans-popover-chip.selected {
+            background: var(--accent-mint);
+            color: #ffffff;
+            border-color: var(--accent-mint);
+        }
+        body.dark .ans-popover-chip.selected { color: #0a0a0a; }
+        .ans-popover-text {
+            display: block;
+            width: 100%;
+            margin: 14px 0 10px;
+            padding: 14px;
+            border: 1.5px solid var(--inner-section-border);
+            background: var(--inner-item-bg);
+            border-radius: 10px;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+        .ans-popover-text:focus { border-color: var(--accent-mint); }
+        .ans-popover-hint {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .ans-popover-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .ans-popover-actions button {
+            flex: 1;
+            padding: 11px;
+            border: 1px solid var(--inner-section-border);
+            background: var(--inner-item-bg);
+            color: var(--text-secondary);
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: filter 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
+        }
+        .ans-popover-actions button:hover { border-color: var(--accent-mint); color: var(--text-primary); }
+        .ans-popover-actions button:active { transform: scale(0.96); }
+        .ans-popover-actions .ans-popover-close {
+            background: var(--accent-mint);
+            color: #ffffff;
+            border-color: var(--accent-mint);
+        }
+        body.dark .ans-popover-actions .ans-popover-close { color: #0a0a0a; }
+
         /* [결과 셀 — 인라인 결과 패널 공용] */
         .results-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 4px; }
         .result-cell {
@@ -617,65 +696,6 @@
         }
         .answer-row .ans-text:focus { border-color: var(--accent-mint); }
         .answer-row .ans-text.has-value { background: var(--inner-section-bg); border-color: var(--accent-mint); }
-
-        /* [풀이 시간 시각화 차트] */
-        .time-chart {
-            margin-top: 16px;
-            padding: 14px;
-            background: var(--inner-section-bg);
-            border: 1px solid var(--inner-section-border);
-            border-radius: 12px;
-            position: relative;
-            text-align: left;
-            display: none;
-        }
-        .time-chart-title { font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-bottom: 10px; letter-spacing: 0.02em; }
-        .time-chart-legend {
-            display: flex;
-            gap: 12px;
-            font-size: 11px;
-            color: var(--text-tertiary);
-            margin-bottom: 6px;
-            justify-content: flex-end;
-        }
-        .time-chart-legend .lg-item { display: inline-flex; align-items: center; gap: 4px; }
-        .time-chart-legend .lg-bar { width: 10px; height: 10px; background: var(--accent-mint); border-radius: 2px; }
-        .time-chart-legend .lg-line { width: 14px; height: 2px; background: var(--chart-line); }
-        .time-chart-body { position: relative; height: 110px; padding: 4px 4px 16px; overflow: hidden; }
-        .time-chart-bars {
-            display: flex;
-            align-items: flex-end;
-            gap: 2px;
-            height: 100%;
-            position: relative;
-        }
-        .time-chart-bar {
-            flex: 1;
-            min-width: 4px;
-            background: var(--accent-mint);
-            border-radius: 2px 2px 0 0;
-            position: relative;
-            transition: height 0.2s ease, background 0.15s ease;
-        }
-        .time-chart-bar.active { background: var(--chart-line); }
-        .time-chart-bar .bar-label {
-            position: absolute;
-            bottom: -14px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 8px;
-            color: var(--text-tertiary);
-            white-space: nowrap;
-            font-family: 'Courier New', monospace;
-        }
-        .time-chart-line {
-            position: absolute;
-            inset: 4px 4px 16px 4px;
-            pointer-events: none;
-        }
-        .time-chart-line polyline { fill: none; stroke: var(--chart-line); stroke-width: 1.5; }
-        .time-chart-line circle { fill: var(--chart-line); }
-        .time-chart-empty { text-align: center; color: var(--text-tertiary); font-size: 13px; padding: 28px 0; }
 
         /* [인라인 결과 패널] */
         .results-inline {
@@ -1001,22 +1021,6 @@
                     <div class="answer-summary-grid" id="answer-summary-grid"></div>
                 </div>
 
-                <!-- 풀이 시간 시각화 -->
-                <div class="time-chart" id="time-chart">
-                    <div class="time-chart-title">📊 풀이 시간 시각화</div>
-                    <div class="time-chart-legend">
-                        <span class="lg-item"><span class="lg-bar"></span>구간별 시간</span>
-                        <span class="lg-item"><span class="lg-line"></span>누적 시간</span>
-                    </div>
-                    <div class="time-chart-body" id="time-chart-body">
-                        <div class="time-chart-empty" id="time-chart-empty">기록이 시작되면 차트가 표시됩니다.</div>
-                        <div class="time-chart-bars" id="time-chart-bars" style="display:none;"></div>
-                        <svg class="time-chart-line" id="time-chart-line" viewBox="0 0 100 100" preserveAspectRatio="none" style="display:none;">
-                            <polyline id="time-chart-polyline" points=""></polyline>
-                        </svg>
-                    </div>
-                </div>
-
                 <!-- 정답 입력 패널 -->
                 <div class="answer-input-panel" id="answer-input-panel">
                     <div class="answer-input-title">
@@ -1136,9 +1140,8 @@
         const LAP_RECORD_LABELS = ['1회독 단계', '2회독 단계', '검토/마무리', '풀이 종료'];
         let simpleLaps = []; // [{ at, dur }]
 
-        // 정답 / 차트 상태
+        // 정답 상태
         let questionAnswers = {}; // { '1': '3', '12': '주관식답', ... }
-        let chronologicalLaps = []; // [{ qid, dur, cumulative, kind: 'grid'|'simple' }]
 
         let currentScreen = 'main';
         const VALID_SCREENS = new Set(['main', 'image', 'timer', 'settings']);
@@ -1199,9 +1202,12 @@
             };
 
             // 모드별 컨테이너 표시/숨김
+            const isGrid = timerConfig.mode === 'grid';
             document.getElementById('lap-record-container').style.display = (timerConfig.mode === 'lap') ? 'block' : 'none';
-            document.getElementById('question-grid-section').style.display = (timerConfig.mode === 'grid') ? 'block' : 'none';
-            document.getElementById('time-chart').style.display = (timerConfig.mode === 'vanilla') ? 'none' : 'block';
+            document.getElementById('question-grid-section').style.display = isGrid ? 'block' : 'none';
+            // grid 모드: 정답 모아보기 및 하단 정답입력 패널은 시험 중 숨김 (시험 종료 후 결과에 포함)
+            document.getElementById('answer-summary').style.display = isGrid ? 'none' : 'block';
+            document.getElementById('answer-input-panel').style.display = isGrid ? 'none' : 'block';
 
             // 디스플레이 옵션 (디지털 / 아날로그)
             const tc = document.getElementById('timer-container');
@@ -1269,7 +1275,6 @@
                 btn.className = 'btn btn-start';
                 const container = document.getElementById('timer-container');
                 if (container) container.classList.remove('running');
-                renderTimeChart();
             }
         }
 
@@ -1379,15 +1384,14 @@
             activeQuestion = null;
             activeQuestionStart = null;
             simpleLaps = [];
-            chronologicalLaps = [];
             questionAnswers = {};
 
             closeLapPopover();
+            closeAnswerPopover();
             hideInlineResults();
             renderSimpleLapList();
             renderAnswerSummary();
             renderAnswerInputList();
-            renderTimeChart();
 
             const container = document.getElementById('timer-container');
             if (container) container.classList.remove('running', 'theme-yellow', 'theme-red');
@@ -1415,16 +1419,7 @@
             const dur = Math.max(0, elapsed - prev);
             simpleLaps.push({ at: elapsed, dur: dur });
 
-            // chronologicalLaps 재구성 (단계 라벨 사용)
-            chronologicalLaps = simpleLaps.map((l, i) => ({
-                qid: LAP_RECORD_LABELS[i] || ('#' + (i + 1)),
-                dur: l.dur,
-                cumulative: l.at,
-                kind: 'simple'
-            }));
-
             renderSimpleLapList();
-            renderTimeChart();
         }
 
         function renderSimpleLapList() {
@@ -1492,7 +1487,10 @@
             el.addEventListener('pointerup', () => {
                 clearLongPress();
                 if (longPressTriggered) { longPressTriggered = false; return; }
-                toggleQuestion(cell.id);
+                const ok = toggleQuestion(cell.id);
+                if (ok && timerConfig.mode === 'grid') {
+                    showAnswerPopover(cell.id);
+                }
             });
             el.addEventListener('pointerleave', clearLongPress);
             el.addEventListener('pointercancel', clearLongPress);
@@ -1503,9 +1501,9 @@
         function toggleQuestion(cellId) {
             if (!isRunning && getElapsedTime() === 0) {
                 alert('타이머를 먼저 시작해주세요.');
-                return;
+                return false;
             }
-            if (timerEnded) return;
+            if (timerEnded) return false;
             if (activeQuestion === cellId) {
                 commitActiveLap();
                 activeQuestion = null;
@@ -1516,6 +1514,7 @@
                 activeQuestionStart = getElapsedTime();
             }
             renderQuestionCells();
+            return true;
         }
 
         function commitActiveLap() {
@@ -1526,14 +1525,6 @@
             if (!questionLaps[activeQuestion]) questionLaps[activeQuestion] = [];
             questionLaps[activeQuestion].push({ start: activeQuestionStart, end: end, dur: dur });
 
-            const prevCum = chronologicalLaps.length > 0 ? chronologicalLaps[chronologicalLaps.length - 1].cumulative : 0;
-            chronologicalLaps.push({
-                qid: activeQuestion,
-                dur: dur,
-                cumulative: prevCum + dur,
-                kind: 'grid'
-            });
-            renderTimeChart();
         }
 
         function getQuestionTotal(cellId) {
@@ -1605,6 +1596,111 @@
 
         function closeLapPopover() {
             const el = document.getElementById('lap-popover-backdrop');
+            if (el) el.remove();
+        }
+
+        // ==========================================
+        // 정답 입력 팝오버 (문항 클릭 시 플로팅)
+        // ==========================================
+        // 수능 수학 문항 유형:
+        //  - 객관식 5지선다: 1~15, 23~28
+        //  - 주관식 (1~999 입력): 16~22, 29~30
+        function getQuestionType(qNum) {
+            const n = parseInt(qNum, 10);
+            if (n >= 16 && n <= 22) return 'numeric';
+            if (n === 29 || n === 30) return 'numeric';
+            return 'mc';
+        }
+
+        function showAnswerPopover(qNum) {
+            closeAnswerPopover();
+            closeLapPopover();
+            const qType = getQuestionType(qNum);
+            const currentVal = questionAnswers[String(qNum)] || '';
+
+            const backdrop = document.createElement('div');
+            backdrop.className = 'lap-popover-backdrop';
+            backdrop.id = 'answer-popover-backdrop';
+            backdrop.addEventListener('click', (e) => {
+                if (e.target === backdrop) closeAnswerPopover();
+            });
+
+            let bodyHtml = '';
+            if (qType === 'mc') {
+                let chips = '';
+                for (let v = 1; v <= 5; v++) {
+                    const sel = String(currentVal) === String(v) ? ' selected' : '';
+                    chips += '<button type="button" class="ans-popover-chip' + sel + '" data-val="' + v + '">' + v + '</button>';
+                }
+                bodyHtml = '<div class="ans-popover-chips">' + chips + '</div>' +
+                    '<div class="ans-popover-hint">5지선다 객관식 — 다시 누르면 해제</div>';
+            } else {
+                const numericVal = (/^\d+$/.test(currentVal) && parseInt(currentVal, 10) >= 1 && parseInt(currentVal, 10) <= 999) ? currentVal : '';
+                bodyHtml = '<input type="number" class="ans-popover-text" id="ans-popover-input" min="1" max="999" inputmode="numeric" placeholder="1 ~ 999" value="' + numericVal + '">' +
+                    '<div class="ans-popover-hint">주관식 (1 ~ 999)</div>';
+            }
+
+            backdrop.innerHTML = '<div class="lap-popover answer-popover">' +
+                '<div class="lap-popover-title">' + qNum + '번 정답 입력</div>' +
+                bodyHtml +
+                '<div class="ans-popover-actions">' +
+                '<button type="button" class="ans-popover-clear">지우기</button>' +
+                '<button type="button" class="ans-popover-close">완료</button>' +
+                '</div>' +
+                '</div>';
+            document.body.appendChild(backdrop);
+
+            const popover = backdrop.querySelector('.answer-popover');
+
+            if (qType === 'mc') {
+                popover.querySelectorAll('.ans-popover-chip').forEach(chip => {
+                    chip.addEventListener('click', () => {
+                        const val = chip.dataset.val;
+                        const cur = questionAnswers[String(qNum)];
+                        if (String(cur) === String(val)) {
+                            setAnswer(qNum, null);
+                        } else {
+                            setAnswer(qNum, val);
+                        }
+                        const newVal = questionAnswers[String(qNum)];
+                        popover.querySelectorAll('.ans-popover-chip').forEach(c => {
+                            c.classList.toggle('selected', String(newVal) === c.dataset.val);
+                        });
+                    });
+                });
+            } else {
+                const input = popover.querySelector('#ans-popover-input');
+                input.addEventListener('input', (e) => {
+                    let v = e.target.value.replace(/[^\d]/g, '');
+                    if (v === '') {
+                        setAnswer(qNum, null);
+                        e.target.value = '';
+                        return;
+                    }
+                    let n = parseInt(v, 10);
+                    if (n < 1) n = 1;
+                    if (n > 999) n = 999;
+                    e.target.value = String(n);
+                    setAnswer(qNum, String(n));
+                });
+                // 자동 포커스 — 모바일 환경에서 키보드가 자동으로 올라옴
+                setTimeout(() => { try { input.focus(); input.select(); } catch (e) {} }, 60);
+            }
+
+            popover.querySelector('.ans-popover-clear').addEventListener('click', () => {
+                setAnswer(qNum, null);
+                if (qType === 'mc') {
+                    popover.querySelectorAll('.ans-popover-chip').forEach(c => c.classList.remove('selected'));
+                } else {
+                    const input = popover.querySelector('#ans-popover-input');
+                    if (input) input.value = '';
+                }
+            });
+            popover.querySelector('.ans-popover-close').addEventListener('click', closeAnswerPopover);
+        }
+
+        function closeAnswerPopover() {
+            const el = document.getElementById('answer-popover-backdrop');
             if (el) el.remove();
         }
 
@@ -1738,52 +1834,6 @@
         }
 
         // ==========================================
-        // 풀이 시간 시각화 차트
-        // ==========================================
-        function renderTimeChart() {
-            const empty = document.getElementById('time-chart-empty');
-            const bars = document.getElementById('time-chart-bars');
-            const svg = document.getElementById('time-chart-line');
-            const polyline = document.getElementById('time-chart-polyline');
-            if (!bars || !svg || !polyline || !empty) return;
-
-            if (chronologicalLaps.length === 0) {
-                empty.style.display = 'block';
-                bars.style.display = 'none';
-                svg.style.display = 'none';
-                bars.innerHTML = '';
-                polyline.setAttribute('points', '');
-                return;
-            }
-
-            empty.style.display = 'none';
-            bars.style.display = 'flex';
-            svg.style.display = 'block';
-
-            const maxDur = Math.max(...chronologicalLaps.map(l => l.dur), 1);
-            const totalCum = chronologicalLaps[chronologicalLaps.length - 1].cumulative || 1;
-
-            // 막대 그리기
-            bars.innerHTML = chronologicalLaps.map((l, i) => {
-                const heightPct = (l.dur / maxDur) * 100;
-                const labelText = String(i + 1);
-                const title = (i + 1) + '번째 풀이 — ' + (l.kind === 'grid' ? l.qid + '번 ' : '') + formatTime(l.dur) + ' (누적 ' + formatTime(l.cumulative) + ')';
-                return '<div class="time-chart-bar" style="height:' + heightPct.toFixed(1) + '%" title="' + title.replace(/"/g, '&quot;') + '">' +
-                    (chronologicalLaps.length <= 30 ? '<span class="bar-label">' + labelText + '</span>' : '') +
-                    '</div>';
-            }).join('');
-
-            // 누적 라인 (polyline)
-            const N = chronologicalLaps.length;
-            const points = chronologicalLaps.map((l, i) => {
-                const x = N === 1 ? 50 : (i / (N - 1)) * 100;
-                const y = 100 - (l.cumulative / totalCum) * 100;
-                return x.toFixed(2) + ',' + y.toFixed(2);
-            }).join(' ');
-            polyline.setAttribute('points', points);
-        }
-
-        // ==========================================
         // 시험 종료 결과 패널 (grid 모드)
         // ==========================================
         function showInlineResults() {
@@ -1820,8 +1870,27 @@
             const elapsed = getElapsedTime();
             const idle = Math.max(0, elapsed - assigned);
 
+            // 정답 모아보기 (시험 종료 후)
+            let answerSummaryHtml = '<div class="answer-summary-grid" style="margin-bottom: 16px;">';
+            for (let q = 1; q <= 30; q++) {
+                const v = questionAnswers[String(q)];
+                const isEmpty = v == null || v === '';
+                const display = isEmpty ? '−' : String(v);
+                let cellCls = 'answer-summary-cell';
+                if (isEmpty) cellCls += ' empty';
+                else if (!/^[1-5]$/.test(String(v))) cellCls += ' text';
+                answerSummaryHtml +=
+                    '<div class="' + cellCls + '">' +
+                    '<span class="ans-num">' + q + '</span>' +
+                    '<span class="ans-val">' + display + '</span>' +
+                    '</div>';
+            }
+            answerSummaryHtml += '</div>';
+
             panel.innerHTML =
-                '<div class="results-inline-title">🔔 문항별 소요 시간</div>' +
+                '<div class="results-inline-title">📝 정답 모아보기</div>' +
+                answerSummaryHtml +
+                '<div class="results-inline-title" style="margin-top: 18px;">🔔 문항별 소요 시간</div>' +
                 '<div class="grid-label" style="margin: 0 0 6px; padding: 0 2px;">공통 (1~22)</div>' +
                 '<div class="results-grid" style="grid-template-columns: repeat(5, 1fr);">' + commonHtml + '</div>' +
                 '<div class="grid-label" style="margin: 12px 0 6px; padding: 0 2px;">선택 (23~30)</div>' +
@@ -1860,7 +1929,6 @@
             initAnswerInputList();
             initAnalogMarkers();
             renderAnswerSummary();
-            renderTimeChart();
             updateAnalogClock(0);
             renderScreen(resolveScreen(window.location.hash));
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
