@@ -36,6 +36,7 @@
             --on-accent: #ffffff;
             /* 페이스메이커(권장 페이스) · 트랙 모티프 */
             --pacer: #f59e42;
+            --correct: #16a34a;
             --lane: #d9d5ec;
             --track-stripe: rgba(126, 108, 232, 0.05);
             --logo-blend: multiply;
@@ -73,6 +74,7 @@
             --accent-mint: #b3a4f5;
             --on-accent: #1a1030;
             --pacer: #ffb454;
+            --correct: #34d399;
             --lane: rgba(255, 255, 255, 0.14);
             --track-stripe: rgba(179, 164, 245, 0.05);
             --logo-blend: normal;
@@ -205,6 +207,57 @@
         .image-container img { width: 100%; border-radius: 12px; margin-bottom: 15px; }
         .zoom-hint { color: var(--text-tertiary); font-size: 14px; margin-bottom: 15px; }
 
+        /* [메인 히어로 — Race 컨셉] */
+        .hero { text-align: center; padding: 6px 0 2px; margin-bottom: 20px; }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 6px 13px; border-radius: 999px;
+            background: var(--accent-soft); color: var(--accent);
+            font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+            margin-bottom: 18px;
+        }
+        .hero-badge__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pulse-dot 1.6s ease-in-out infinite; }
+        @keyframes pulse-dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(0.65); } }
+        .hero-title { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 12px; color: var(--text-primary); }
+        .hero-accent { color: var(--accent); font-family: var(--font-display); font-style: italic; font-weight: 800; }
+        .hero-sub { color: var(--text-secondary); font-size: 14px; line-height: 1.55; margin-bottom: 24px; }
+        .hero-cta { font-size: 18px; padding: 18px; }
+        .main-secondary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 4px; }
+        .main-secondary .btn { margin-bottom: 0; font-size: 15px; padding: 15px 10px; }
+        @media (max-width: 480px) { .hero-title { font-size: 26px; } .launch-circle { width: 80px; height: 80px; } }
+        @media (max-width: 380px) { .main-secondary { grid-template-columns: 1fr; } }
+
+        /* [설정 — 출발 런치 바 (Silgam식 원형 CTA)] */
+        .launch-bar {
+            display: flex; align-items: center; gap: 16px;
+            margin-top: 6px; padding: 18px 20px;
+            background: var(--inner-section-bg);
+            border: 1px solid var(--inner-section-border);
+            border-radius: 16px;
+            text-align: left;
+        }
+        .launch-info { flex: 1; min-width: 0; }
+        .launch-info__title { font-size: 17px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.01em; }
+        .launch-info__sub { font-size: 12.5px; color: var(--text-secondary); margin-top: 3px; }
+        .launch-circle {
+            flex-shrink: 0;
+            width: 92px; height: 92px;
+            border-radius: 50%;
+            border: none;
+            background: var(--accent);
+            color: var(--on-accent);
+            cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 2px;
+            box-shadow: 0 10px 26px var(--accent-soft);
+            transition: transform 0.12s ease, filter 0.15s ease;
+            font-family: inherit;
+        }
+        .launch-circle:hover { transform: scale(1.05); filter: brightness(1.06); }
+        .launch-circle:active { transform: scale(0.96); }
+        .launch-circle__icon { font-size: 22px; line-height: 1; }
+        .launch-circle__label { font-size: 14px; font-weight: 800; letter-spacing: 0.02em; }
+
         /* [설정 페이지 — 가로 pill UI] */
         .setting-section {
             background: var(--inner-section-bg);
@@ -216,11 +269,21 @@
             transition: background 0.3s ease, border-color 0.3s ease;
         }
         .setting-section h3 {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
+            font-size: 12px;
+            color: var(--accent);
+            margin-bottom: 12px;
             font-weight: 700;
-            letter-spacing: 0.02em;
+            letter-spacing: 0.04em;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .setting-section h3::before {
+            content: "";
+            width: 3px;
+            height: 13px;
+            border-radius: 2px;
+            background: var(--accent);
         }
         .setting-options {
             display: grid;
@@ -244,15 +307,15 @@
             text-align: center;
             transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
         }
-        .setting-options label:hover { border-color: var(--accent-mint); color: var(--text-primary); }
+        .setting-options label:hover { border-color: var(--accent); color: var(--text-primary); }
         .setting-options label:active { transform: scale(0.96); }
         .setting-options label input { position: absolute; opacity: 0; pointer-events: none; }
         .setting-options label:has(input:checked) {
-            background: var(--accent-mint);
-            color: #ffffff;
-            border-color: var(--accent-mint);
+            background: var(--accent);
+            color: var(--on-accent);
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px var(--accent-soft);
         }
-        body.dark .setting-options label:has(input:checked) { color: #0a0a0a; }
         .setting-section .opt-hint {
             display: block;
             margin-top: 8px;
@@ -307,12 +370,12 @@
             margin-top: 6px;
         }
 
-        /* [채점된 정답 셀 색상] */
+        /* [채점된 정답 셀 색상] — 정답/오답은 의미색(녹/적)으로 유지 (브랜드 라벤더와 분리) */
         .answer-summary-cell.correct {
-            background: rgba(35, 227, 115, 0.15);
-            border-color: var(--accent-mint);
+            background: rgba(34, 197, 94, 0.15);
+            border-color: var(--correct);
         }
-        .answer-summary-cell.correct .ans-val { color: var(--accent-mint); }
+        .answer-summary-cell.correct .ans-val { color: var(--correct); }
         .answer-summary-cell.incorrect {
             background: rgba(239, 68, 68, 0.12);
             border-color: #ef4444;
@@ -324,7 +387,7 @@
             font-weight: 700;
             line-height: 1;
         }
-        .answer-summary-cell.correct .ans-mark { color: var(--accent-mint); }
+        .answer-summary-cell.correct .ans-mark { color: var(--correct); }
         .answer-summary-cell.incorrect .ans-mark { color: #ef4444; }
         .answer-summary-cell.empty .ans-mark { color: var(--text-tertiary); }
 
@@ -344,6 +407,53 @@
         .timer-hint { color: var(--text-tertiary); font-size: 13px; margin-bottom: 5px; }
         .timer-buttons { display: flex; gap: 10px; margin-bottom: 10px; }
         .timer-buttons .btn { padding: 14px; font-size: 16px; }
+
+        /* [페이스메이커 트랙] */
+        .pace-track { max-width: 400px; margin: 14px auto 22px; }
+        .pace-track__lane {
+            position: relative;
+            height: 14px;
+            border-radius: 999px;
+            background: var(--inner-section-bg);
+            border: 1px solid var(--inner-section-border);
+        }
+        .pace-track__fill {
+            position: absolute; left: 0; top: 0; bottom: 0;
+            width: 0%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--accent-soft), var(--accent));
+            transition: width 0.5s linear;
+        }
+        .pace-marker {
+            position: absolute; top: 50%; left: 4%;
+            /* scaleX(-1): 이모지를 좌우 반전해 진행 방향(오른쪽)을 바라보게 */
+            transform: translate(-50%, -50%) scaleX(-1);
+            font-size: 19px; line-height: 1;
+            transition: left 0.5s linear;
+            pointer-events: none;
+            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.28));
+        }
+        .pace-marker--pacer { z-index: 1; opacity: 0.9; }
+        .pace-marker--runner { z-index: 3; }
+        .pace-track__labels {
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 8px;
+            margin-top: 11px;
+        }
+        .pace-track__labels .pace-end {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-tertiary);
+            white-space: nowrap;
+        }
+        .pace-feedback {
+            flex: 1; text-align: center;
+            font-size: 12.5px; font-weight: 700;
+            color: var(--accent);
+            transition: color 0.3s ease;
+        }
+        .pace-feedback.ahead { color: var(--correct); }
+        .pace-feedback.behind { color: var(--pacer); }
 
         /* lap 모드 — 일반 lap 기록 컨테이너 */
         .lap-record-container { margin-top: 16px; display: none; }
@@ -388,11 +498,21 @@
         /* [문항별 lap 그리드 — 30셀 통일] */
         .question-grid-section { margin-top: 24px; text-align: left; display: none; }
         .grid-label {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin: 14px 4px 8px;
-            font-weight: 600;
-            letter-spacing: 0.02em;
+            font-size: 12px;
+            color: var(--accent);
+            margin: 16px 4px 8px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .grid-label::before {
+            content: "";
+            width: 3px;
+            height: 13px;
+            border-radius: 2px;
+            background: var(--accent);
         }
         .grid-label:first-child { margin-top: 0; }
         .question-grid { display: grid; gap: 6px; }
@@ -423,12 +543,12 @@
         .question-cell .badge { position: absolute; top: 3px; right: 5px; font-size: 9px; font-weight: 700; color: var(--accent-mint); }
         .question-cell.has-time { background: var(--inner-section-bg); }
         .question-cell.active {
-            border-color: var(--accent-mint);
-            box-shadow: 0 0 0 2px rgba(35, 227, 115, 0.18), 0 0 18px rgba(35, 227, 115, 0.3);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-soft), 0 0 18px var(--accent-soft);
             background: var(--inner-section-bg);
         }
         .question-cell.active .num,
-        .question-cell.active .time { color: var(--accent-mint); }
+        .question-cell.active .time { color: var(--accent); }
         .question-grid-section.disabled .question-cell { opacity: 0.45; cursor: not-allowed; }
 
         /* [lap 상세 팝오버] */
@@ -477,8 +597,8 @@
             width: 100%;
             padding: 11px;
             margin-top: 14px;
-            background: var(--accent-mint);
-            color: white;
+            background: var(--accent);
+            color: var(--on-accent);
             border: none;
             border-radius: 9px;
             font-size: 14px;
@@ -629,9 +749,10 @@
         .analog-clock {
             position: relative;
             z-index: 1;
-            width: 88%;
-            height: 88%;
+            width: 98%;
+            height: 98%;
             display: none;
+            filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.35));
         }
         .analog-readout {
             position: absolute;
@@ -649,25 +770,42 @@
         .timer-container.mode-analog .analog-clock { display: block; }
         .timer-container.mode-analog .timer-display { display: none; }
         .timer-container.mode-analog .analog-readout { display: block; }
-        .ac-rim { fill: var(--inner-item-bg); stroke: var(--timer-color); stroke-width: 2; opacity: 0.6; }
-        .ac-markers line { stroke: var(--timer-color); stroke-linecap: round; opacity: 0.6; stroke-width: 1.5; }
-        .ac-markers line.major { stroke-width: 3; opacity: 0.95; }
+        /* 아날로그 모드에선 브리딩 링 숨김 → 시계만 깔끔하게 */
+        .timer-container.mode-analog .breathing-circle { display: none; }
+
+        /* [수능 시계 스타일 — 흰 다이얼 · 검정 베젤 · 굵은 숫자 · 점 마커] */
+        .ac-case { fill: #181a1f; }
+        .ac-bezel { fill: none; stroke: #34373d; stroke-width: 1.5; }
+        .ac-face { fill: #ffffff; }
+        .ac-dots circle { fill: #2c2f36; }
+        .ac-dots circle.major { fill: #15171c; }
         .ac-numbers text {
-            fill: var(--timer-color);
-            font-size: 17px;
-            font-weight: 700;
-            font-family: Georgia, 'Times New Roman', serif;
+            fill: #15171c;
+            font-size: 18px;
+            font-weight: 800;
+            font-family: var(--font-display);
+            text-anchor: middle;
+            dominant-baseline: central;
         }
         .ac-hour, .ac-minute {
-            stroke: var(--timer-color);
+            stroke: #15171c;
             stroke-linecap: round;
             transform-box: view-box;
             transform-origin: 100px 100px;
             transition: transform 0.5s linear;
         }
-        .ac-hour { stroke-width: 5; }
-        .ac-minute { stroke-width: 3; }
-        .ac-center { fill: var(--timer-color); }
+        .ac-hour { stroke-width: 5.5; }
+        .ac-minute { stroke-width: 3.4; }
+        .ac-second {
+            stroke: var(--accent);
+            stroke-width: 1.4;
+            stroke-linecap: round;
+            transform-box: view-box;
+            transform-origin: 100px 100px;
+            transition: transform 0.3s linear;
+        }
+        .ac-center { fill: #15171c; }
+        .ac-center-inner { fill: var(--accent); }
 
         /* [정답 모아보기 — 결과 패널 내부에서만 사용] */
         .answer-summary-grid {
@@ -787,8 +925,7 @@
         .bottom-nav__item:hover { color: var(--text-primary); background: rgba(15, 23, 42, 0.05); }
         body.dark .bottom-nav__item:hover { background: rgba(255, 255, 255, 0.06); }
         .bottom-nav__item:active { transform: scale(0.96); }
-        .bottom-nav__item.active { background: var(--accent-mint); color: #ffffff; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18); }
-        body.dark .bottom-nav__item.active { color: #0a0a0a; }
+        .bottom-nav__item.active { background: var(--accent); color: var(--on-accent); box-shadow: 0 4px 14px var(--accent-soft); }
 
         body { padding-bottom: 96px; }
 
@@ -841,17 +978,22 @@
 
             <!-- 메인 화면 -->
             <div id="main-screen" class="screen active">
-                <h1>이해원 모의고사 Final</h1>
-                <a href="https://integrate.kr/column/?q=YToxOntzOjEyOiJrZXl3b3JkX3R5cGUiO3M6MzoiYWxsIjt9&bmode=view&idx=170013700&t=board" target="_blank" class="btn btn-purple">
-                    타임라인 가이드
-                </a>
-                <button class="btn btn-pink" onclick="showScreen('image')">
-                    단계별 전략 수립
-                </button>
-                <button class="btn btn-mint" onclick="showScreen('settings')">
-                    <span class="emoji">⚙️</span>
-                    100분 타이머
-                </button>
+                <div class="hero">
+                    <span class="hero-badge"><span class="hero-badge__dot"></span>100분 레이스 · 시간 운용</span>
+                    <h1 class="hero-title">이해원 모의고사 <span class="hero-accent">Final</span></h1>
+                    <p class="hero-sub">100분, 당신의 페이스로 완주하라.<br>실전처럼 달리고 시간 운용을 기록하세요.</p>
+                    <button class="btn btn-mint hero-cta" onclick="showScreen('settings')">
+                        🏁 레이스 시작
+                    </button>
+                </div>
+                <div class="main-secondary">
+                    <a href="https://integrate.kr/column/?q=YToxOntzOjEyOiJrZXl3b3JkX3R5cGUiO3M6MzoiYWxsIjt9&bmode=view&idx=170013700&t=board" target="_blank" class="btn btn-pink">
+                        📰 타임라인 가이드
+                    </a>
+                    <button class="btn btn-pink" onclick="showScreen('image')">
+                        🗺️ 단계별 전략
+                    </button>
+                </div>
 
                 <div class="book-section">
                     <p class="book-section-title">📚 이해원 연구소 교재</p>
@@ -891,7 +1033,7 @@
 
             <!-- 타이머 설정 화면 -->
             <div id="settings-screen" class="screen">
-                <h1>타이머 설정</h1>
+                <h1>🏁 레이스 설정</h1>
                 <form id="timer-settings-form">
                     <div class="setting-section">
                         <h3>1. 타이머 종류</h3>
@@ -953,9 +1095,16 @@
                         </div>
                     </div>
 
-                    <button type="button" class="btn btn-mint" onclick="applySettingsAndStart()">
-                        ▶ 설정 완료 및 시작
-                    </button>
+                    <div class="launch-bar">
+                        <div class="launch-info">
+                            <p class="launch-info__title">출발 준비 완료</p>
+                            <p class="launch-info__sub">설정을 확인하고 출발하세요</p>
+                        </div>
+                        <button type="button" class="launch-circle" onclick="applySettingsAndStart()" aria-label="레이스 출발">
+                            <span class="launch-circle__icon">▶</span>
+                            <span class="launch-circle__label">출발</span>
+                        </button>
+                    </div>
                     <button type="button" class="btn btn-back" onclick="goBackToMain()">
                         ← 뒤로 가기
                     </button>
@@ -971,20 +1120,47 @@
                     <div class="breathing-circle"></div>
                     <div class="timer-display" id="timer-display">00:00</div>
                     <svg class="analog-clock" id="analog-clock" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-                        <circle cx="100" cy="100" r="92" class="ac-rim" />
-                        <g class="ac-markers" id="ac-markers"></g>
+                        <circle cx="100" cy="100" r="99" class="ac-case" />
+                        <circle cx="100" cy="100" r="88" class="ac-bezel" />
+                        <circle cx="100" cy="100" r="86" class="ac-face" />
+                        <g class="ac-dots" id="ac-markers"></g>
                         <g class="ac-numbers">
-                            <text x="100" y="32" text-anchor="middle" dominant-baseline="middle">12</text>
-                            <text x="170" y="100" text-anchor="middle" dominant-baseline="middle">3</text>
-                            <text x="100" y="170" text-anchor="middle" dominant-baseline="middle">6</text>
-                            <text x="30" y="100" text-anchor="middle" dominant-baseline="middle">9</text>
+                            <text x="100" y="40">12</text>
+                            <text x="131" y="48">1</text>
+                            <text x="154" y="69">2</text>
+                            <text x="162" y="100">3</text>
+                            <text x="154" y="131">4</text>
+                            <text x="131" y="152">5</text>
+                            <text x="100" y="160">6</text>
+                            <text x="69" y="152">7</text>
+                            <text x="46" y="131">8</text>
+                            <text x="38" y="100">9</text>
+                            <text x="46" y="69">10</text>
+                            <text x="69" y="48">11</text>
                         </g>
-                        <line class="ac-hour" id="ac-hour" x1="100" y1="100" x2="100" y2="55" />
-                        <line class="ac-minute" id="ac-minute" x1="100" y1="100" x2="100" y2="35" />
-                        <circle cx="100" cy="100" r="4" class="ac-center" />
+                        <line class="ac-hour" id="ac-hour" x1="100" y1="108" x2="100" y2="58" />
+                        <line class="ac-minute" id="ac-minute" x1="100" y1="110" x2="100" y2="38" />
+                        <line class="ac-second" id="ac-second" x1="100" y1="114" x2="100" y2="32" />
+                        <circle cx="100" cy="100" r="4.5" class="ac-center" />
+                        <circle cx="100" cy="100" r="2" class="ac-center-inner" />
                     </svg>
                     <div class="analog-readout" id="analog-readout">10:30</div>
                 </div>
+
+                <!-- 페이스메이커 트랙 (Race) — 나(🏃) vs 권장 페이스(🐇) -->
+                <div class="pace-track" id="pace-track">
+                    <div class="pace-track__lane">
+                        <div class="pace-track__fill" id="pace-fill"></div>
+                        <div class="pace-marker pace-marker--pacer" id="pace-pacer" aria-label="권장 페이스">🐇</div>
+                        <div class="pace-marker pace-marker--runner" id="pace-runner" aria-label="나">🏃</div>
+                    </div>
+                    <div class="pace-track__labels">
+                        <span class="pace-end">출발</span>
+                        <span class="pace-feedback" id="pace-feedback">출발 대기 중</span>
+                        <span class="pace-end">피니시 🏁</span>
+                    </div>
+                </div>
+
                 <div class="timer-buttons">
                     <button class="btn btn-start" id="start-btn" onclick="toggleTimer()">
                         ▶ 시작
@@ -1245,6 +1421,7 @@
             document.getElementById('timer-display').textContent = formatTime(elapsed);
             updateTimerColor(elapsed);
             updateAnalogClock(elapsed);
+            updatePaceTrack(elapsed);
             checkAudioCues(elapsed);
             if (timerConfig.mode === 'grid') {
                 renderQuestionCells();
@@ -1282,30 +1459,84 @@
         }
 
         // ==========================================
+        // 페이스메이커 트랙 — 나(🏃) vs 권장 페이스(🐇)
+        //  · grid 모드: 러너=실제 푼 문항 진행률, 페이서=경과시간 기준 권장 진행률 → 비교 코칭
+        //  · vanilla/lap 모드: 단순 경과 진행바 (페이서 숨김)
+        // ==========================================
+        function updatePaceTrack(elapsed) {
+            const track = document.getElementById('pace-track');
+            if (!track) return;
+            const fill = document.getElementById('pace-fill');
+            const runner = document.getElementById('pace-runner');
+            const pacer = document.getElementById('pace-pacer');
+            const feedback = document.getElementById('pace-feedback');
+            const max = getMaxTime();
+            const timeRatio = max > 0 ? Math.min(1, Math.max(0, elapsed / max)) : 0;
+            const clampPos = (p) => Math.max(4, Math.min(96, p));
+            const atStart = (!isRunning && elapsed === 0);
+            feedback.classList.remove('ahead', 'behind');
+
+            if (timerConfig.mode === 'grid') {
+                pacer.style.display = '';
+                const TOTAL_Q = 30;
+                const answered = Object.keys(questionAnswers).length;
+                const progressRatio = Math.min(1, answered / TOTAL_Q);
+                runner.style.left = clampPos(progressRatio * 100) + '%';
+                pacer.style.left = clampPos(timeRatio * 100) + '%';
+                fill.style.width = (progressRatio * 100) + '%';
+
+                const expectedQ = Math.round(timeRatio * TOTAL_Q);
+                const diff = answered - expectedQ;
+                if (atStart) {
+                    feedback.textContent = '출발 대기 중';
+                } else if (timeRatio >= 1) {
+                    feedback.textContent = '🏁 완주! 정답 ' + answered + '/30';
+                } else if (diff >= 1) {
+                    feedback.textContent = '🐇보다 ' + diff + '문항 앞서요';
+                    feedback.classList.add('ahead');
+                } else if (diff <= -1) {
+                    feedback.textContent = '🐇보다 ' + (-diff) + '문항 뒤처졌어요';
+                    feedback.classList.add('behind');
+                } else {
+                    feedback.textContent = '페이스 양호 👍';
+                }
+            } else {
+                // vanilla / lap — 페이서 없이 경과 진행바
+                pacer.style.display = 'none';
+                runner.style.left = clampPos(timeRatio * 100) + '%';
+                fill.style.width = (timeRatio * 100) + '%';
+                if (atStart) {
+                    feedback.textContent = '출발 대기 중';
+                } else if (timeRatio >= 1) {
+                    feedback.textContent = '🏁 완주!';
+                } else {
+                    feedback.textContent = '남은 거리 ' + formatTime(Math.max(0, max - elapsed));
+                }
+            }
+        }
+
+        // ==========================================
         // 아날로그 시계 (10:30 → 12:10, 100분 매핑)
         // ==========================================
         // SVG 12시간 마커 한 번만 생성
+        // 수능 시계식 60개 분 점 마커 (5분 단위는 더 크고 진하게)
         function initAnalogMarkers() {
             const g = document.getElementById('ac-markers');
             if (!g) return;
             g.innerHTML = '';
             const ns = 'http://www.w3.org/2000/svg';
-            for (let i = 0; i < 12; i++) {
-                const angle = (i * 30) * Math.PI / 180;
-                const isMajor = i % 3 === 0;
-                const r1 = 92;
-                const r2 = isMajor ? 80 : 86;
-                const x1 = 100 + Math.sin(angle) * r1;
-                const y1 = 100 - Math.cos(angle) * r1;
-                const x2 = 100 + Math.sin(angle) * r2;
-                const y2 = 100 - Math.cos(angle) * r2;
-                const line = document.createElementNS(ns, 'line');
-                line.setAttribute('x1', x1.toFixed(2));
-                line.setAttribute('y1', y1.toFixed(2));
-                line.setAttribute('x2', x2.toFixed(2));
-                line.setAttribute('y2', y2.toFixed(2));
-                if (isMajor) line.setAttribute('class', 'major');
-                g.appendChild(line);
+            const r = 78;
+            for (let i = 0; i < 60; i++) {
+                const angle = (i * 6) * Math.PI / 180;
+                const cx = 100 + Math.sin(angle) * r;
+                const cy = 100 - Math.cos(angle) * r;
+                const isMajor = i % 5 === 0;
+                const dot = document.createElementNS(ns, 'circle');
+                dot.setAttribute('cx', cx.toFixed(2));
+                dot.setAttribute('cy', cy.toFixed(2));
+                dot.setAttribute('r', isMajor ? '1.9' : '1.0');
+                if (isMajor) dot.setAttribute('class', 'major');
+                g.appendChild(dot);
             }
         }
 
@@ -1316,6 +1547,7 @@
         function updateAnalogClock(elapsed) {
             const hourEl = document.getElementById('ac-hour');
             const minuteEl = document.getElementById('ac-minute');
+            const secondEl = document.getElementById('ac-second');
             const readoutEl = document.getElementById('analog-readout');
             if (!hourEl || !minuteEl) return;
             const max = getMaxTime();
@@ -1326,12 +1558,19 @@
             hourEl.style.transform = 'rotate(' + hourAngle.toFixed(2) + 'deg)';
             minuteEl.style.transform = 'rotate(' + minuteAngle.toFixed(2) + 'deg)';
 
+            // 시:분:초 계산 (시침/초침/읽기보조 공용)
+            const totalMin = 10 * 60 + 30 + examMin; // 분 단위 (실수 가능)
+            const h = Math.floor(totalMin / 60);
+            const m = Math.floor(totalMin % 60);
+            const s = Math.floor((totalMin - Math.floor(totalMin)) * 60);
+
+            // 초침 — 누적각(examMin*360)으로 1분에 한 바퀴, 분 경계서 역회전 방지
+            if (secondEl) {
+                secondEl.style.transform = 'rotate(' + (examMin * 360).toFixed(2) + 'deg)';
+            }
+
             // 읽기 보조 텍스트 (현재 표시 시각)
             if (readoutEl) {
-                const totalMin = 10 * 60 + 30 + examMin; // 분 단위 (실수 가능)
-                const h = Math.floor(totalMin / 60);
-                const m = Math.floor(totalMin % 60);
-                const s = Math.floor((totalMin - Math.floor(totalMin)) * 60);
                 readoutEl.textContent =
                     String(h).padStart(2, '0') + ':' +
                     String(m).padStart(2, '0') + ':' +
@@ -1792,6 +2031,8 @@
             } else {
                 questionAnswers[key] = String(value);
             }
+            // 답안 입력 즉시 페이스 트랙(러너) 반영
+            if (timerConfig.mode === 'grid') updatePaceTrack(getElapsedTime());
         }
 
         // ==========================================
