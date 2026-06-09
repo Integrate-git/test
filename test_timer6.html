@@ -876,6 +876,38 @@
         .results-inline-retry:active { transform: scale(0.98); }
         body.dark .results-inline-retry { color: #0a0a0a; }
 
+        /* [결과 — 페이스 분포 타임라인 (시간 운용)] */
+        .rt-sub { font-size: 11px; font-weight: 600; color: var(--text-tertiary); letter-spacing: 0.04em; margin-left: 4px; }
+        .pace-dist { margin: 2px 0 6px; }
+        .pace-dist__bar {
+            position: relative;
+            height: 28px;
+            border-radius: 8px;
+            background: var(--inner-item-bg);
+            border: 1px solid var(--inner-section-border);
+            overflow: hidden;
+        }
+        /* 50% 기준선 (중간 지점) */
+        .pace-dist__bar::after {
+            content: ""; position: absolute; top: 0; bottom: 0; left: 50%;
+            width: 1px; background: var(--lane);
+        }
+        .pace-dist__seg {
+            position: absolute; top: 0; bottom: 0;
+            background: var(--accent);
+            opacity: 0.9;
+            box-shadow: inset -1px 0 0 var(--card-bg);
+        }
+        .pace-dist__seg.alt { opacity: 0.55; }
+        .pace-dist__axis {
+            display: flex; justify-content: space-between;
+            margin-top: 7px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-tertiary);
+        }
+        .pace-dist__legend { font-size: 11px; color: var(--text-tertiary); margin-top: 6px; line-height: 1.4; }
+
         /* [하단 네비게이션] */
         .bottom-nav {
             position: fixed;
@@ -2134,6 +2166,26 @@
             const elapsed = getElapsedTime();
             const idle = Math.max(0, elapsed - assigned);
 
+            // 페이스 분포 타임라인 — 출발→피니시 구간에 문항별 시간 배분 표시
+            const maxT = getMaxTime();
+            let distSegs = '';
+            COMMON_CELLS.concat(SELECT_CELLS).forEach((c, idx) => {
+                (questionLaps[c.id] || []).forEach((lap) => {
+                    const left = maxT > 0 ? (lap.start / maxT * 100) : 0;
+                    const width = maxT > 0 ? Math.max(0.6, lap.dur / maxT * 100) : 0;
+                    const altCls = (idx % 2 === 0) ? '' : ' alt';
+                    distSegs += '<div class="pace-dist__seg' + altCls + '" style="left:' + left.toFixed(2) +
+                        '%;width:' + width.toFixed(2) + '%" title="' + c.label + '번 · ' + formatTime(lap.dur) + '"></div>';
+                });
+            });
+            const paceDistHtml =
+                '<div class="results-inline-title" style="margin-top: 18px;">🏃 페이스 분포 <span class="rt-sub">시간 운용</span></div>' +
+                '<div class="pace-dist">' +
+                    '<div class="pace-dist__bar">' + distSegs + '</div>' +
+                    '<div class="pace-dist__axis"><span>출발</span><span>중간</span><span>피니시 🏁</span></div>' +
+                    '<div class="pace-dist__legend">막대 = 각 문항에 쓴 시간 · 빈 구간 = 기타 시간(이동·검토). 막대가 한쪽에 몰릴수록 페이스 편차가 큽니다.</div>' +
+                '</div>';
+
             // 채점 결과 (시험 모드가 default가 아닐 때)
             const grade = gradeAnswers();
             let scoreHeaderHtml = '';
@@ -2185,17 +2237,19 @@
 
             const summaryTitle = grade ? '🎯 채점 결과' : '📝 정답 모아보기';
             panel.innerHTML =
-                '<div class="results-inline-title">' + summaryTitle + '</div>' +
+                '<div class="results-inline-title">🏁 완주 기록</div>' +
                 scoreHeaderHtml +
+                '<div class="results-inline-title" style="margin-top: 8px;">' + summaryTitle + '</div>' +
                 answerSummaryHtml +
-                '<div class="results-inline-title" style="margin-top: 18px;">🔔 문항별 소요 시간</div>' +
+                paceDistHtml +
+                '<div class="results-inline-title" style="margin-top: 18px;">🏁 스플릿 <span class="rt-sub">문항별 소요 시간</span></div>' +
                 '<div class="grid-label" style="margin: 0 0 6px; padding: 0 2px;">공통 (1~22)</div>' +
                 '<div class="results-grid" style="grid-template-columns: repeat(5, 1fr);">' + commonHtml + '</div>' +
                 '<div class="grid-label" style="margin: 12px 0 6px; padding: 0 2px;">선택 (23~30)</div>' +
                 '<div class="results-grid">' + selectHtml + '</div>' +
-                '<div class="lap-row total"><span class="label">기타 소요 시간</span><span class="value">' + formatTime(idle) + '</span></div>' +
-                '<div class="lap-row total"><span class="label">전체</span><span class="value">' + formatTime(elapsed) + '</span></div>' +
-                '<button class="results-inline-retry" type="button" onclick="resetTimer()">🔄 다시 풀기</button>';
+                '<div class="lap-row total"><span class="label">기타 시간 (이동·검토)</span><span class="value">' + formatTime(idle) + '</span></div>' +
+                '<div class="lap-row total"><span class="label">전체 기록</span><span class="value">' + formatTime(elapsed) + '</span></div>' +
+                '<button class="results-inline-retry" type="button" onclick="resetTimer()">🔄 다시 달리기</button>';
             panel.style.display = 'block';
             setTimeout(() => {
                 panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
