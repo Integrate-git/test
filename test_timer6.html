@@ -550,6 +550,61 @@
         .question-cell.active .num,
         .question-cell.active .time { color: var(--accent); }
         .question-grid-section.disabled .question-cell { opacity: 0.45; cursor: not-allowed; }
+        /* 답안 기록된 셀 — 좌상단 점 */
+        .question-cell.answered::after {
+            content: ""; position: absolute; top: 4px; left: 5px;
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--accent);
+        }
+
+        /* [고정 답안 독 — 인라인 정답 입력] */
+        .answer-dock {
+            margin-top: 18px;
+            background: var(--inner-section-bg);
+            border: 1px solid var(--inner-section-border);
+            border-radius: 14px;
+            padding: 14px;
+            text-align: left;
+        }
+        .answer-dock .dock-hint {
+            font-size: 13px; color: var(--text-secondary);
+            text-align: center; padding: 10px 4px; line-height: 1.5;
+        }
+        .dock-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .dock-q { font-size: 14px; color: var(--text-secondary); }
+        .dock-q b { color: var(--text-primary); font-size: 16px; font-weight: 800; }
+        .dock-time { font-family: var(--font-mono); font-size: 13px; color: var(--accent); font-weight: 700; }
+        .dock-chips { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .dock-chip {
+            aspect-ratio: 1; border: 1.5px solid var(--inner-section-border);
+            background: var(--inner-item-bg); border-radius: 12px;
+            font-size: 20px; font-weight: 700; color: var(--text-primary);
+            cursor: pointer; font-family: inherit; -webkit-tap-highlight-color: transparent;
+            transition: background .12s ease, border-color .12s ease, transform .08s ease;
+        }
+        .dock-chip:active { transform: scale(0.92); }
+        .dock-chip.selected { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+        .dock-omr { display: flex; flex-direction: column; gap: 7px; }
+        .dock-omr-group { display: flex; align-items: center; gap: 8px; }
+        .dock-omr-label { width: 24px; flex-shrink: 0; font-size: 12px; font-weight: 700; color: var(--text-secondary); text-align: center; }
+        .dock-omr-digits { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; flex: 1; }
+        .dock-digit {
+            aspect-ratio: 1; border: 1px solid var(--inner-section-border);
+            background: var(--inner-item-bg); border-radius: 7px;
+            font-size: 13px; font-weight: 600; color: var(--text-primary);
+            cursor: pointer; font-family: var(--font-mono); padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            transition: background .12s ease, border-color .12s ease, transform .08s ease;
+        }
+        .dock-digit:active { transform: scale(0.88); }
+        .dock-digit.selected { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+        /* 묶음(그룹) 버튼 — 문항별 입력 블록 */
+        .dock-member { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-top: 1px dashed var(--inner-section-border); }
+        .dock-member:first-of-type { border-top: none; padding-top: 2px; }
+        .dock-member-label { flex-shrink: 0; width: 32px; font-size: 13px; font-weight: 800; color: var(--text-primary); padding-top: 9px; }
+        .dock-member-body { flex: 1; min-width: 0; }
+        .dock-member.is-current .dock-member-label { color: var(--accent); }
+        .dock-group { font-size: 11px; color: var(--text-tertiary); font-weight: 600; margin-left: 6px; }
 
         /* [lap 상세 팝오버] */
         .lap-popover-backdrop {
@@ -711,7 +766,8 @@
         /* [브리딩 타이머] */
         .timer-container {
             position: relative;
-            width: min(240px, 60vw);
+            /* 문항 그리드의 약 4/5(=4문항) 폭만큼 크게 */
+            width: min(360px, 80%);
             aspect-ratio: 1 / 1;
             margin: 24px auto 20px;
             display: flex;
@@ -996,6 +1052,40 @@
             .setting-options { grid-template-columns: repeat(auto-fit, minmax(95px, 1fr)); }
             .setting-options label { padding: 10px 6px; font-size: 12px; }
         }
+
+        /* [넓은 화면(PC/태블릿 가로) — 문항별 기록 2단 레이아웃]
+           좌: 시계+문항표 / 우: 답안 독(스티키). 주관식 OMR은 세로 컬럼.
+           body.tl-grid 는 '타이머 화면 + 문항별 기록 모드'일 때만 부여됨. */
+        @media (min-width: 880px) {
+            body.tl-grid .container { max-width: 1000px; }
+            body.tl-grid .timer-layout {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) 360px;
+                gap: 30px;
+                align-items: start;
+                margin-top: 8px;
+            }
+            body.tl-grid .timer-main { text-align: center; }
+            body.tl-grid .timer-side { position: sticky; top: 16px; }
+            body.tl-grid .answer-dock { margin-top: 0; }
+            /* 객관식 그룹: 한 줄에 한 문제 */
+            body.tl-grid .dock-members { display: block; }
+            /* 단답형 그룹: 두 문제 나란히(1×2) — 세로로 안 길어지게 */
+            body.tl-grid .dock-members.is-numeric { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+            body.tl-grid .dock-members.is-numeric .dock-member { flex-direction: column; align-items: stretch; gap: 4px; padding: 6px 0; border-top: none; }
+            body.tl-grid .dock-members.is-numeric .dock-member-label { width: auto; padding-top: 0; }
+            /* 주관식 OMR — 백/십/일 세로 컬럼(0~9 위→아래), 버튼 더 좁게 */
+            body.tl-grid .dock-omr { flex-direction: row; justify-content: center; gap: 6px; }
+            body.tl-grid .dock-omr-group { flex-direction: column; align-items: center; gap: 4px; width: 44px; max-width: 44px; }
+            body.tl-grid .dock-omr-label { width: auto; margin-bottom: 2px; }
+            body.tl-grid .dock-omr-digits { grid-template-columns: 1fr; gap: 4px; width: 100%; }
+            body.tl-grid .dock-digit { aspect-ratio: auto; height: 28px; font-size: 13px; }
+            /* 완주 후: 2단을 단일 단으로 접고(빈 답안칸 제거) 결과를 중앙 표시 */
+            body.tl-grid.race-finished .container { max-width: 600px; }
+            body.tl-grid.race-finished .timer-layout { display: block; }
+            body.tl-grid.race-finished .timer-side { display: none; }
+            body.tl-grid.race-finished .results-inline { max-width: none; }
+        }
     </style>
 </head>
 <body>
@@ -1147,6 +1237,8 @@
             <div id="timer-screen" class="screen">
                 <h1 id="timer-title">⏱️ 100분 타이머</h1>
                 <p class="timer-hint" id="timer-hint">💡 [시작]을 누르면 타이머가 작동합니다.</p>
+                <div class="timer-layout" id="timer-layout">
+                <div class="timer-main">
                 <p class="timer-label">경과 시간</p>
                 <div class="timer-container mode-digital" id="timer-container">
                     <div class="breathing-circle"></div>
@@ -1218,6 +1310,12 @@
                     <p class="grid-label">선택 (23~30)</p>
                     <div class="question-grid grid-select" id="grid-select"></div>
                 </div>
+                </div><!-- /timer-main -->
+                <div class="timer-side" id="timer-side">
+                    <!-- 고정 답안 독 (모달 대신 인라인 입력) -->
+                    <div class="answer-dock" id="answer-dock"></div>
+                </div>
+                </div><!-- /timer-layout -->
 
                 <div class="results-inline" id="results-inline" style="display: none;"></div>
 
@@ -1337,6 +1435,7 @@
 
         // 정답 상태
         let questionAnswers = {}; // { '1': '3', '12': '주관식답', ... }
+        let questionOmr = {};     // 주관식 자리 상태 { '20': {h:'', t:'3', o:'5'}, ... } (표시 보존용)
 
         let currentScreen = 'main';
         const VALID_SCREENS = new Set(['main', 'image', 'timer', 'settings']);
@@ -1356,6 +1455,9 @@
                 resetTimer();
             }
             currentScreen = screen;
+
+            // 넓은 화면 2단 레이아웃은 '타이머 화면 + 문항별 기록' 일 때만
+            document.body.classList.toggle('tl-grid', screen === 'timer' && timerConfig.mode === 'grid');
 
             setZoomEnabled(screen === 'image');
             updateBottomNav(screen);
@@ -1457,6 +1559,11 @@
             checkAudioCues(elapsed);
             if (timerConfig.mode === 'grid') {
                 renderQuestionCells();
+                // 독의 진행시간만 가볍게 갱신 (전체 재렌더 X)
+                const dockTime = document.getElementById('dock-time');
+                if (dockTime && activeQuestion && activeQuestionStart != null) {
+                    dockTime.textContent = '⏱ ' + formatTime(Math.max(0, getElapsedTime() - activeQuestionStart));
+                }
             }
 
             const max = getMaxTime();
@@ -1470,6 +1577,9 @@
                     activeQuestion = null;
                     activeQuestionStart = null;
                     renderQuestionCells();
+                    updateAnswerDock();
+                    // 넓은 화면 2단 → 완주 후엔 단일 단으로 접어 빈 박스 제거
+                    document.body.classList.add('race-finished');
                     showInlineResults();
                 }
                 const btn = document.getElementById('start-btn');
@@ -1746,11 +1856,14 @@
             activeQuestionStart = null;
             simpleLaps = [];
             questionAnswers = {};
+            questionOmr = {};
 
             closeLapPopover();
             closeAnswerPopover();
             hideInlineResults();
             renderSimpleLapList();
+            updateAnswerDock();
+            document.body.classList.remove('race-finished');
             stopAllAudio();
 
             const container = document.getElementById('timer-container');
@@ -1805,12 +1918,28 @@
         }
 
         // ==========================================
-        // 문항별 lap (grid 모드) — 30셀 통일
+        // 문항별 lap (grid 모드)
+        //  · 그리드 셀 = 개별 문항(타이머는 문항별)
+        //  · 답안 독은 '묶음(ANSWER_GROUPS)' 단위로 표시 — 묶음 내 아무 문항이나 누르면 묶음 전체가 뜸
         // ==========================================
-        const COMMON_CELLS = Array.from({ length: 22 }, (_, i) => ({ id: String(i + 1), label: String(i + 1) }));
-        const SELECT_CELLS = Array.from({ length: 8 }, (_, i) => ({ id: String(i + 23), label: String(i + 23) }));
+        function makeCells(nums) {
+            return nums.map(function (n) {
+                return { id: String(n), label: String(n), members: [n] };
+            });
+        }
+        const COMMON_CELLS = makeCells([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]);
+        const SELECT_CELLS = makeCells([23, 24, 25, 26, 27, 28, 29, 30]);
         const CELL_BY_ID = {};
         [].concat(COMMON_CELLS, SELECT_CELLS).forEach(c => { CELL_BY_ID[c.id] = c; });
+
+        // 답안 독에서 함께 표시되는 문항 묶음
+        const ANSWER_GROUPS = [
+            [1, 2, 3, 4], [5, 6, 7, 8, 9, 10], [11, 12, 13, 14, 15],
+            [16, 17], [18, 19], [20], [21, 22],
+            [23, 24, 25, 26, 27, 28], [29, 30]
+        ];
+        const GROUP_OF = {}; // 문항번호 → 같은 묶음의 문항 배열
+        ANSWER_GROUPS.forEach(function (g) { g.forEach(function (q) { GROUP_OF[String(q)] = g; }); });
 
         let longPressTimer = null;
         let longPressTriggered = false;
@@ -1847,10 +1976,8 @@
             el.addEventListener('pointerup', () => {
                 clearLongPress();
                 if (longPressTriggered) { longPressTriggered = false; return; }
-                const ok = toggleQuestion(cell.id);
-                if (ok && timerConfig.mode === 'grid') {
-                    showAnswerPopover(cell.id);
-                }
+                // 탭 = 그 문항으로 이동(타이밍)만. 정답은 아래 고정 독에서 입력.
+                toggleQuestion(cell.id);
             });
             el.addEventListener('pointerleave', clearLongPress);
             el.addEventListener('pointercancel', clearLongPress);
@@ -1874,6 +2001,7 @@
                 activeQuestionStart = getElapsedTime();
             }
             renderQuestionCells();
+            updateAnswerDock();
             return true;
         }
 
@@ -1913,6 +2041,10 @@
                 cell.classList.toggle('has-time', total > 0);
                 if (badgeEl) badgeEl.textContent = visits > 1 ? '×' + visits : '';
                 cell.classList.toggle('active', isActive);
+                const cellDef = CELL_BY_ID[id];
+                const members = cellDef ? cellDef.members : [id];
+                const allAns = members.every(function (m) { const a = questionAnswers[String(m)]; return a != null && a !== ''; });
+                cell.classList.toggle('answered', allAns);
             });
             const section = document.getElementById('question-grid-section');
             if (section) section.classList.toggle('disabled', timerEnded);
@@ -1960,7 +2092,103 @@
         }
 
         // ==========================================
-        // 정답 입력 팝오버 (문항 클릭 시 플로팅)
+        // 고정 답안 독 (인라인 정답 입력 — 모달 대체)
+        //  · 객관식: ①~⑤ 칩
+        //  · 주관식: 백/십/일 OMR picker (앞자리 비우면 한/두 자리 수)
+        // ==========================================
+        // 백/십/일 자리 상태(questionOmr[q])를 정답 문자열로 변환.
+        // 누른 자리만 순서대로 이어붙임 — 빈 자리는 0으로 채우지 않음(OMR 강제 X).
+        // 예) 일=7 → "7", 백=0·십=1·일=2 → "012"→12, 백=3·십=5·일=9 → 359, 백=3만 → 3
+        function omrValue(st) {
+            const concat = (st.h || '') + (st.t || '') + (st.o || '');
+            if (concat === '') return '';
+            const n = parseInt(concat, 10);
+            if (isNaN(n) || n < 1) return '';
+            return String(Math.min(999, n));
+        }
+
+        // 한 문항(member)의 입력 UI(html) 생성
+        function dockMemberHtml(qn, isCurrent) {
+            const q = String(qn);
+            const type = getQuestionType(q);
+            const cur = questionAnswers[q] || '';
+            let inner = '';
+            if (type === 'mc') {
+                let chips = '';
+                for (let v = 1; v <= 5; v++) {
+                    const sel = String(cur) === String(v) ? ' selected' : '';
+                    chips += '<button type="button" class="dock-chip' + sel + '" data-q="' + q + '" data-mc="' + v + '">' + v + '</button>';
+                }
+                inner = '<div class="dock-chips">' + chips + '</div>';
+            } else {
+                const st = questionOmr[q] || { h: '', t: '', o: '' };
+                let rowsHtml = '';
+                [['h', '백'], ['t', '십'], ['o', '일']].forEach(function (pl) {
+                    let cells = '';
+                    for (let d = 0; d <= 9; d++) {
+                        const sel = st[pl[0]] === String(d) ? ' selected' : '';
+                        cells += '<button type="button" class="dock-digit' + sel + '" data-q="' + q + '" data-place="' + pl[0] + '" data-digit="' + d + '">' + d + '</button>';
+                    }
+                    rowsHtml += '<div class="dock-omr-group"><span class="dock-omr-label">' + pl[1] + '</span><div class="dock-omr-digits">' + cells + '</div></div>';
+                });
+                inner = '<div class="dock-omr">' + rowsHtml + '</div>';
+            }
+            return '<div class="dock-member' + (isCurrent ? ' is-current' : '') + '">' +
+                '<span class="dock-member-label">' + qn + '번</span>' +
+                '<div class="dock-member-body">' + inner + '</div></div>';
+        }
+
+        function updateAnswerDock() {
+            const dock = document.getElementById('answer-dock');
+            if (!dock) return;
+            if (timerConfig.mode !== 'grid' || timerEnded) { dock.style.display = 'none'; return; }
+            dock.style.display = 'block';
+
+            const q = activeQuestion; // 개별 문항 id (예: "7")
+            if (!q) {
+                dock.innerHTML = '<div class="dock-hint">문항을 누르면 그 문제 풀이가 시작돼요.<br>답은 시험 중 부담되면 비워두고, 여기서 원할 때만 기록하세요.</div>';
+                return;
+            }
+
+            // 활성 문항이 속한 묶음 전체를 함께 표시
+            const group = GROUP_OF[String(q)] || [parseInt(q, 10)];
+            const groupLabel = group.length > 1 ? (group[0] + '~' + group[group.length - 1]) : String(group[0]);
+            const isNumericGroup = getQuestionType(group[0]) === 'numeric';
+            const liveDur = (activeQuestionStart != null) ? formatTime(Math.max(0, getElapsedTime() - activeQuestionStart)) : '00:00';
+
+            dock.innerHTML =
+                '<div class="dock-head"><span class="dock-q">현재 풀이 <b>' + q + '번</b>' +
+                (group.length > 1 ? ' <span class="dock-group">묶음 ' + groupLabel + '</span>' : '') + '</span>' +
+                '<span class="dock-time" id="dock-time">⏱ ' + liveDur + '</span></div>' +
+                '<div class="dock-members' + (isNumericGroup ? ' is-numeric' : '') + '">' +
+                group.map(function (m) { return dockMemberHtml(m, String(m) === String(q)); }).join('') +
+                '</div>';
+
+            // 핸들러 (그룹이면 문항마다 data-q로 구분)
+            dock.querySelectorAll('.dock-chip').forEach(function (c) {
+                c.addEventListener('click', function () {
+                    const q = c.dataset.q, v = c.dataset.mc;
+                    setAnswer(q, String(questionAnswers[q] || '') === String(v) ? null : v);
+                    updateAnswerDock();
+                    renderQuestionCells();
+                });
+            });
+            dock.querySelectorAll('.dock-digit').forEach(function (b) {
+                b.addEventListener('click', function () {
+                    const q = b.dataset.q;
+                    const st = questionOmr[q] || { h: '', t: '', o: '' };
+                    const place = b.dataset.place, d = b.dataset.digit;
+                    st[place] = (st[place] === d) ? '' : d; // 같은 숫자 재탭 → 해제 (다른 자리는 그대로)
+                    questionOmr[q] = st;
+                    setAnswer(q, omrValue(st) || null);
+                    updateAnswerDock();
+                    renderQuestionCells();
+                });
+            });
+        }
+
+        // ==========================================
+        // 정답 입력 팝오버 (레거시 — 현재 미사용, 호환용 유지)
         // ==========================================
         // 수능 수학 문항 유형:
         //  - 객관식 5지선다: 1~15, 23~28
