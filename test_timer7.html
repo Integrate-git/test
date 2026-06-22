@@ -1,0 +1,2863 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta id="viewport-meta" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>이해원 모의고사 Final 전략 수립</title>
+    <!-- 폰트: Pretendard(한글 UI) · JetBrains Mono(타이머/숫자) · Montserrat(영문 헤드라인) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <!-- 모션 라이브러리 (역동적 연출용) — 진입 시퀀스·스크롤 리빌·카운트업·컨페티.
+         오프라인 필요 시 vendor/ 폴더로 셀프호스팅 가능. 로드 실패해도 motionOK()가 가드함. -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ===== 디자인 토큰 (연보라 라벤더 · Race/페이스메이커 컨셉) =====
+           --accent 계열만 브랜드(라벤더). 정답/오답 등 의미색(녹/적)은 그대로 유지. */
+        :root {
+            --bg-page: #f2f1f8;
+            --text-primary: #1a1830;
+            --text-secondary: #6b6880;
+            --text-tertiary: #9c99b0;
+            --card-bg: #ffffff;
+            --card-border: #e6e3f0;
+            --card-shadow: 0 18px 50px rgba(40, 30, 90, 0.10);
+            --inner-section-bg: #f6f5fb;
+            --inner-section-border: #e6e3f0;
+            --inner-item-bg: #ffffff;
+            --inner-item-border-left: #7e6ce8;
+            --inner-item-border-empty: #cfcae6;
+            --inner-item-shadow: 0 2px 5px rgba(40, 30, 90, 0.06);
+            /* 브랜드 라벤더 (--accent-mint 는 레거시 이름 유지 → 라벤더로 매핑) */
+            --accent: #7e6ce8;
+            --accent-strong: #6a55e0;
+            --accent-soft: rgba(126, 108, 232, 0.12);
+            --accent-mint: #7e6ce8;
+            --on-accent: #ffffff;
+            /* 페이스메이커(권장 페이스) · 트랙 모티프 */
+            --pacer: #f59e42;
+            --correct: #16a34a;
+            --lane: #d9d5ec;
+            --track-stripe: rgba(126, 108, 232, 0.05);
+            --logo-blend: multiply;
+            --sns-bg: #ffffff;
+            --sns-border: #e6e3f0;
+            --sns-color: #9c99b0;
+            --footer-info-color: #6b6880;
+            --footer-copy-color: #9c99b0;
+            --timer-text-shadow: 0 2px 4px rgba(40, 30, 90, 0.08);
+            --toggle-color: #6b6880;
+            --toggle-hover-bg: rgba(40, 30, 90, 0.06);
+            --chart-line: #ef4444;
+            --font-ui: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+            --font-display: 'Montserrat', 'Pretendard Variable', Pretendard, sans-serif;
+        }
+
+        body.dark {
+            --bg-page: #0e0e12;
+            --text-primary: #ffffff;
+            --text-secondary: #c7c4d6;
+            --text-tertiary: #908da3;
+            --card-bg: #18181f;
+            --card-border: rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+            --inner-section-bg: #232230;
+            --inner-section-border: rgba(255, 255, 255, 0.07);
+            --inner-item-bg: #2a2937;
+            --inner-item-border-left: #b3a4f5;
+            --inner-item-border-empty: rgba(255, 255, 255, 0.12);
+            --inner-item-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
+            --accent: #b3a4f5;
+            --accent-strong: #c8bcff;
+            --accent-soft: rgba(179, 164, 245, 0.16);
+            --accent-mint: #b3a4f5;
+            --on-accent: #1a1030;
+            --pacer: #ffb454;
+            --correct: #34d399;
+            --lane: rgba(255, 255, 255, 0.14);
+            --track-stripe: rgba(179, 164, 245, 0.05);
+            --logo-blend: normal;
+            --sns-bg: #232230;
+            --sns-border: rgba(255, 255, 255, 0.08);
+            --sns-color: #908da3;
+            --footer-info-color: #c7c4d6;
+            --footer-copy-color: #908da3;
+            --timer-text-shadow: 0 0 24px rgba(179, 164, 245, 0.40);
+            --toggle-color: #c7c4d6;
+            --toggle-hover-bg: rgba(255, 255, 255, 0.08);
+            --chart-line: #f87171;
+        }
+
+        body {
+            font-family: var(--font-ui);
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            touch-action: manipulation;
+            -webkit-text-size-adjust: 100%;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container { max-width: 600px; width: 100%; text-align: center; }
+
+        /* [로고] */
+        .main-logo {
+            width: 220px;
+            height: auto;
+            margin-bottom: 30px;
+            mix-blend-mode: var(--logo-blend);
+        }
+        .logo-text {
+            display: none;
+            margin-bottom: 30px;
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            font-family: var(--font-ui);
+            line-height: 1;
+        }
+        body.dark .main-logo { display: none; }
+        body.dark .logo-text { display: inline-block; }
+
+        /* [다크/라이트 토글] */
+        .theme-toggle {
+            position: fixed;
+            top: 14px;
+            right: 14px;
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--toggle-color);
+            z-index: 200;
+            padding: 0;
+            transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+        }
+        .theme-toggle:hover { background: var(--toggle-hover-bg); transform: scale(1.08); }
+        .theme-toggle:active { transform: scale(0.94); }
+        .theme-toggle svg { width: 22px; height: 22px; }
+
+        /* [박스] */
+        .white-box {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+            margin-bottom: 30px;
+            transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        h1 { color: var(--text-primary); margin-bottom: 30px; font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
+
+        /* [버튼 공통] */
+        .btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            text-decoration: none;
+            margin-bottom: 15px;
+            touch-action: manipulation;
+        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 22px var(--accent-soft); filter: brightness(1.05); }
+        .btn:active { transform: translateY(0); filter: brightness(1.0); }
+
+        /* 주요 CTA = 솔리드 라벤더 / 보조 = 고스트(대시 레인 테두리) */
+        .btn-purple { background: var(--accent); color: var(--on-accent); }
+        .btn-pink {
+            background: transparent;
+            color: var(--accent);
+            border: 2px dashed var(--accent);
+        }
+        .btn-pink:hover { background: var(--accent-soft); box-shadow: none; }
+        .btn-mint { background: var(--accent); color: var(--on-accent); }
+
+        .btn-start { background: var(--accent); color: var(--on-accent); flex: 1; margin-bottom: 0; }
+        .btn-pause { background: #f5a524; color: #2b1a00; flex: 1; margin-bottom: 0; }
+        .btn-reset { background: #ef4444; color: white; flex: 1; margin-bottom: 0; }
+        .btn-record { background: var(--accent); color: var(--on-accent); width: 100%; margin-bottom: 0; padding: 14px; font-size: 16px; }
+        .btn-record:disabled { background: var(--inner-item-border-empty); color: var(--text-tertiary); cursor: not-allowed; transform: none; box-shadow: none; filter: none; }
+        .btn-back { background: transparent; color: var(--text-secondary); border: 1px solid var(--card-border); margin-top: 20px; }
+        .btn-back:hover { background: var(--inner-section-bg); box-shadow: none; }
+
+        /* 화면 전환 */
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        .image-container img { width: 100%; border-radius: 12px; margin-bottom: 15px; }
+        .zoom-hint { color: var(--text-tertiary); font-size: 14px; margin-bottom: 15px; }
+
+        /* [메인 히어로 — Race 컨셉] */
+        .hero { text-align: center; padding: 6px 0 2px; margin-bottom: 20px; }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 6px 13px; border-radius: 999px;
+            background: var(--accent-soft); color: var(--accent);
+            font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+            margin-bottom: 18px;
+        }
+        .hero-badge__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pulse-dot 1.6s ease-in-out infinite; }
+        @keyframes pulse-dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(0.65); } }
+        .hero-title { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 12px; color: var(--text-primary); }
+        .hero-accent { color: var(--accent); font-family: var(--font-display); font-style: italic; font-weight: 800; }
+        .hero-sub { color: var(--text-secondary); font-size: 14px; line-height: 1.55; margin-bottom: 24px; }
+        .hero-cta { font-size: 18px; padding: 18px; }
+        .main-secondary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 4px; }
+        .main-secondary .btn { margin-bottom: 0; font-size: 15px; padding: 15px 10px; }
+        @media (max-width: 480px) { .hero-title { font-size: 26px; } .launch-circle { width: 80px; height: 80px; } }
+        @media (max-width: 380px) { .main-secondary { grid-template-columns: 1fr; } }
+
+        /* [설정 — 출발 런치 바 (Silgam식 원형 CTA)] */
+        .launch-bar {
+            display: flex; align-items: center; gap: 16px;
+            margin-top: 6px; padding: 18px 20px;
+            background: var(--inner-section-bg);
+            border: 1px solid var(--inner-section-border);
+            border-radius: 16px;
+            text-align: left;
+        }
+        .launch-info { flex: 1; min-width: 0; }
+        .launch-info__title { font-size: 17px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.01em; }
+        .launch-info__sub { font-size: 12.5px; color: var(--text-secondary); margin-top: 3px; }
+        .launch-circle {
+            flex-shrink: 0;
+            width: 92px; height: 92px;
+            border-radius: 50%;
+            border: none;
+            background: var(--accent);
+            color: var(--on-accent);
+            cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 2px;
+            box-shadow: 0 10px 26px var(--accent-soft);
+            transition: transform 0.12s ease, filter 0.15s ease;
+            font-family: inherit;
+        }
+        .launch-circle:hover { transform: scale(1.05); filter: brightness(1.06); }
+        .launch-circle:active { transform: scale(0.96); }
+        .launch-circle__icon { font-size: 22px; line-height: 1; }
+        .launch-circle__label { font-size: 14px; font-weight: 800; letter-spacing: 0.02em; }
+
+        /* [설정 페이지 — 가로 pill UI] */
+        .setting-section {
+            background: var(--inner-section-bg);
+            border: 1px solid var(--inner-section-border);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            text-align: left;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .setting-section h3 {
+            font-size: 12px;
+            color: var(--accent);
+            margin-bottom: 12px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .setting-section h3::before {
+            content: "";
+            width: 3px;
+            height: 13px;
+            border-radius: 2px;
+            background: var(--accent);
+        }
+        .setting-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 6px;
+        }
+        .setting-options label {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 11px 8px;
+            background: var(--inner-item-bg);
+            border: 1px solid var(--inner-section-border);
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            user-select: none;
+            text-align: center;
+            transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
+        }
+        .setting-options label:hover { border-color: var(--accent); color: var(--text-primary); }
+        .setting-options label:active { transform: scale(0.96); }
+        .setting-options label input { position: absolute; opacity: 0; pointer-events: none; }
+        .setting-options label:has(input:checked) {
+            background: var(--accent);
+            color: var(--on-accent);
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px var(--accent-soft);
+        }
+        .setting-section .opt-hint {
+            display: block;
+            margin-top: 8px;
+            font-size: 11px;
+            color: var(--text-tertiary);
+        }
+        .setting-section .sub-label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin: 12px 2px 6px;
+            letter-spacing: 0.02em;
+        }
+        .setting-section .sub-label:first-of-type { margin-top: 4px; }
+        .grading-options {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px dashed var(--inner-section-border);
+        }
+        .setting-options label.disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        /* [채점 결과 점수 표시] */
+        .score-display {
+            text-align: center;
+            margin: 6px 0 16px;
+            padding: 14px 12px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--inner-section-border);
+        }
+        .score-total {
+            font-size: 40px;
+            font-weight: 900;
+            color: var(--accent-mint);
+            font-family: var(--font-mono);
+            line-height: 1;
+        }
+        .score-max {
+            font-size: 18px;
+            color: var(--text-secondary);
+            font-weight: 700;
+            font-family: var(--font-mono);
+        }
+        .score-correct {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        /* [채점된 정답 셀 색상] — 정답/오답은 의미색(녹/적)으로 유지 (브랜드 라벤더와 분리) */
+        .answer-summary-cell.correct {
+            background: rgba(34, 197, 94, 0.15);
+            border-color: var(--correct);
+        }
+        .answer-summary-cell.correct .ans-val { color: var(--correct); }
+        .answer-summary-cell.incorrect {
+            background: rgba(239, 68, 68, 0.12);
+            border-color: #ef4444;
+        }
+        .answer-summary-cell.incorrect .ans-val { color: #ef4444; }
+        .answer-summary-cell .ans-mark {
+            font-size: 9px;
+            margin-top: 2px;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .answer-summary-cell.correct .ans-mark { color: var(--correct); }
+        .answer-summary-cell.incorrect .ans-mark { color: #ef4444; }
+        .answer-summary-cell.empty .ans-mark { color: var(--text-tertiary); }
+
+        /* 타이머 스타일 */
+        .timer-display {
+            font-size: 64px;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.03em;
+            margin: 30px 0;
+            text-shadow: var(--timer-text-shadow);
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+        .timer-label { color: var(--text-secondary); font-size: 18px; margin-bottom: 10px; }
+        .timer-hint { color: var(--text-tertiary); font-size: 13px; margin-bottom: 5px; }
+        .timer-buttons { display: flex; gap: 10px; margin-bottom: 10px; }
+        .timer-buttons .btn { padding: 14px; font-size: 16px; }
+
+        /* [페이스메이커 트랙] */
+        .pace-track { max-width: 400px; margin: 14px auto 22px; }
+        .pace-track__lane {
+            position: relative;
+            height: 14px;
+            border-radius: 999px;
+            background: var(--inner-section-bg);
+            border: 1px solid var(--inner-section-border);
+        }
+        .pace-track__fill {
+            position: absolute; left: 0; top: 0; bottom: 0;
+            width: 0%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--accent-soft), var(--accent));
+            transition: width 0.5s linear;
+        }
+        .pace-marker {
+            position: absolute; top: 50%; left: 4%;
+            /* scaleX(-1): 이모지를 좌우 반전해 진행 방향(오른쪽)을 바라보게 */
+            transform: translate(-50%, -50%) scaleX(-1);
+            font-size: 19px; line-height: 1;
+            transition: left 0.5s linear;
+            pointer-events: none;
+            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.28));
+        }
+        .pace-marker--pacer { z-index: 1; opacity: 0.9; }
+        .pace-marker--runner { z-index: 3; }
+        .pace-track__labels {
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 8px;
+            margin-top: 11px;
+        }
+        .pace-track__labels .pace-end {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-tertiary);
+            white-space: nowrap;
+        }
+        .pace-feedback {
+            flex: 1; text-align: center;
+            font-size: 12.5px; font-weight: 700;
+            color: var(--accent);
+            transition: color 0.3s ease;
+        }
+        .pace-feedback.ahead { color: var(--correct); }
+        .pace-feedback.behind { color: var(--pacer); }
+
+        /* lap 모드 — 일반 lap 기록 컨테이너 */
+        .lap-record-container { margin-top: 16px; display: none; }
+        .lap-list {
+            margin-top: 12px;
+            max-height: 240px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            text-align: left;
+        }
+        .lap-list .timestamp-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 9px 14px;
+            background: var(--inner-item-bg);
+            border-radius: 8px;
+            border-left: 4px solid var(--inner-item-border-left);
+            box-shadow: var(--inner-item-shadow);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .lap-list .timestamp-number { font-weight: 600; color: var(--accent-mint); font-size: 14px; }
+        .lap-list .timestamp-time { font-family: var(--font-mono); font-size: 16px; font-weight: bold; color: var(--text-primary); }
+        .lap-list .timestamp-item.empty { color: var(--text-tertiary); border-left-color: var(--inner-item-border-empty); justify-content: center; }
+        .record-count { font-size: 13px; color: var(--text-tertiary); margin-top: 12px; text-align: right; }
+
+        /* 푸터 */
+        .ig-footer { padding: 0 12px 20px; }
+        .ig-footer__sns { display: flex; gap: 10px; align-items: center; justify-content: center; margin-bottom: 15px; }
+        .ig-sns { width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; text-decoration: none; background: var(--sns-bg); border: 1px solid var(--sns-border); transition: transform .12s ease, box-shadow .12s ease, background .3s ease, border-color .3s ease, color .3s ease; color: var(--sns-color); }
+        .ig-sns:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(15, 23, 42, .08); }
+        .ig-sns svg { width: 20px; height: 20px; fill: currentColor; stroke: currentColor; }
+        .ig-sns--instagram:hover { color: #E1306C; border-color: currentColor; }
+        .ig-sns--naver:hover { color: #03C75A; border-color: #03C75A; }
+        .ig-footer__info { margin: 12px 0 10px; display: grid; gap: 6px; color: var(--footer-info-color); font-size: 12.5px; line-height: 1.35; text-align: center; }
+        .ig-footer__info p { margin: 0; }
+        .ig-footer__info a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+        .ig-footer__copyright { margin: 0; font-size: 12.5px; color: var(--footer-copy-color); text-align: center; }
+
+        /* [문항별 lap 그리드 — 30셀 통일] */
+        .question-grid-section { margin-top: 24px; text-align: left; display: none; }
+        .grid-label {
+            font-size: 12px;
+            color: var(--accent);
+            margin: 16px 4px 8px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .grid-label::before {
+            content: "";
+            width: 3px;
+            height: 13px;
+            border-radius: 2px;
+            background: var(--accent);
+        }
+        .grid-label:first-child { margin-top: 0; }
+        .question-grid { display: grid; gap: 6px; }
+        .grid-common { grid-template-columns: repeat(5, 1fr); }
+        .grid-select { grid-template-columns: repeat(4, 1fr); }
+        .question-cell {
+            aspect-ratio: 1.1;
+            background: var(--inner-item-bg);
+            border: 1px solid var(--inner-section-border);
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 2px;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            font-family: inherit;
+            color: var(--text-primary);
+            box-shadow: var(--inner-item-shadow);
+            transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.2s ease, transform 0.08s ease;
+        }
+        .question-cell:active { transform: scale(0.94); }
+        .question-cell .num { font-size: 15px; font-weight: 700; line-height: 1; }
+        .question-cell .time { font-size: 10px; color: var(--text-secondary); margin-top: 4px; font-family: var(--font-mono); line-height: 1; min-height: 11px; }
+        .question-cell .badge { position: absolute; top: 3px; right: 5px; font-size: 9px; font-weight: 700; color: var(--accent-mint); }
+        .question-cell.has-time { background: var(--inner-section-bg); }
+        .question-cell.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-soft), 0 0 18px var(--accent-soft);
+            background: var(--inner-section-bg);
+        }
+        .question-cell.active .num,
+        .question-cell.active .time { color: var(--accent); }
+        .question-grid-section.disabled .question-cell { opacity: 0.45; cursor: not-allowed; }
+        /* 답안 기록된 셀 — 좌상단 점 */
+        .question-cell.answered::after {
+            content: ""; position: absolute; top: 4px; left: 5px;
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--accent);
+        }
+
+        /* [고정 답안 독 — 인라인 정답 입력] */
+        .answer-dock {
+            margin-top: 18px;
+            background: var(--inner-section-bg);
+            border: 1px solid var(--inner-section-border);
+            border-radius: 14px;
+            padding: 14px;
+            text-align: left;
+        }
+        .answer-dock .dock-hint {
+            font-size: 13px; color: var(--text-secondary);
+            text-align: center; padding: 10px 4px; line-height: 1.5;
+        }
+        .dock-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .dock-q { font-size: 14px; color: var(--text-secondary); }
+        .dock-q b { color: var(--text-primary); font-size: 16px; font-weight: 800; }
+        .dock-time { font-family: var(--font-mono); font-size: 13px; color: var(--accent); font-weight: 700; }
+        .dock-chips { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .dock-chip {
+            aspect-ratio: 1; border: 1.5px solid var(--inner-section-border);
+            background: var(--inner-item-bg); border-radius: 12px;
+            font-size: 20px; font-weight: 700; color: var(--text-primary);
+            cursor: pointer; font-family: inherit; -webkit-tap-highlight-color: transparent;
+            transition: background .12s ease, border-color .12s ease, transform .08s ease;
+        }
+        .dock-chip:active { transform: scale(0.92); }
+        .dock-chip.selected { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+        .dock-omr { display: flex; flex-direction: column; gap: 7px; }
+        .dock-omr-group { display: flex; align-items: center; gap: 8px; }
+        .dock-omr-label { width: 24px; flex-shrink: 0; font-size: 12px; font-weight: 700; color: var(--text-secondary); text-align: center; }
+        .dock-omr-digits { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; flex: 1; }
+        .dock-digit {
+            aspect-ratio: 1; border: 1px solid var(--inner-section-border);
+            background: var(--inner-item-bg); border-radius: 7px;
+            font-size: 13px; font-weight: 600; color: var(--text-primary);
+            cursor: pointer; font-family: var(--font-mono); padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            transition: background .12s ease, border-color .12s ease, transform .08s ease;
+        }
+        .dock-digit:active { transform: scale(0.88); }
+        .dock-digit.selected { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+        /* 묶음(그룹) 버튼 — 문항별 입력 블록 */
+        .dock-member { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-top: 1px dashed var(--inner-section-border); }
+        .dock-member:first-of-type { border-top: none; padding-top: 2px; }
+        .dock-member-label { flex-shrink: 0; width: 32px; font-size: 13px; font-weight: 800; color: var(--text-primary); padding-top: 9px; }
+        .dock-member-body { flex: 1; min-width: 0; }
+        .dock-member.is-current .dock-member-label { color: var(--accent); }
+        .dock-group { font-size: 11px; color: var(--text-tertiary); font-weight: 600; margin-left: 6px; }
+
+        /* [lap 상세 팝오버] */
+        .lap-popover-backdrop {
+            position: fixed; inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 300;
+            animation: fadeIn 0.15s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .lap-popover {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 22px;
+            min-width: 260px;
+            max-width: 88%;
+            max-height: 82vh;
+            overflow-y: auto;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+        }
+        .lap-popover-title { font-size: 17px; font-weight: 700; color: var(--text-primary); margin-bottom: 14px; text-align: center; }
+        .lap-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 9px 14px;
+            background: var(--inner-section-bg);
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        .lap-row .label { color: var(--text-secondary); }
+        .lap-row .value { font-family: var(--font-mono); font-weight: 600; }
+        .lap-row.active .value { color: var(--accent-mint); }
+        .lap-row.total {
+            background: transparent;
+            border-top: 1px solid var(--inner-section-border);
+            margin-top: 10px;
+            padding: 12px 14px 4px;
+            border-radius: 0;
+            font-weight: 700;
+        }
+        .lap-popover-close {
+            width: 100%;
+            padding: 11px;
+            margin-top: 14px;
+            background: var(--accent);
+            color: var(--on-accent);
+            border: none;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: filter 0.15s ease;
+        }
+        .lap-popover-close:hover { filter: brightness(1.1); }
+
+        /* [정답 입력 팝오버 — 문항 클릭 시 플로팅] */
+        .answer-popover { min-width: 280px; }
+        .ans-popover-chips {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin: 14px 0 10px;
+        }
+        .ans-popover-chip {
+            aspect-ratio: 1;
+            border: 1.5px solid var(--inner-section-border);
+            background: var(--inner-item-bg);
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-family: inherit;
+            -webkit-tap-highlight-color: transparent;
+            transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
+        }
+        .ans-popover-chip:hover { border-color: var(--accent-mint); }
+        .ans-popover-chip:active { transform: scale(0.92); }
+        .ans-popover-chip.selected {
+            background: var(--accent-mint);
+            color: #ffffff;
+            border-color: var(--accent-mint);
+        }
+        body.dark .ans-popover-chip.selected { color: #0a0a0a; }
+        .ans-popover-text {
+            display: block;
+            width: 100%;
+            margin: 14px 0 10px;
+            padding: 14px;
+            border: 1.5px solid var(--inner-section-border);
+            background: var(--inner-item-bg);
+            border-radius: 10px;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            font-family: var(--font-mono);
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+        .ans-popover-text:focus { border-color: var(--accent-mint); }
+        .ans-popover-hint {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .ans-popover-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .ans-popover-actions button {
+            flex: 1;
+            padding: 11px;
+            border: 1px solid var(--inner-section-border);
+            background: var(--inner-item-bg);
+            color: var(--text-secondary);
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: filter 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
+        }
+        .ans-popover-actions button:hover { border-color: var(--accent-mint); color: var(--text-primary); }
+        .ans-popover-actions button:active { transform: scale(0.96); }
+        .ans-popover-actions .ans-popover-close {
+            background: var(--accent-mint);
+            color: #ffffff;
+            border-color: var(--accent-mint);
+        }
+        body.dark .ans-popover-actions .ans-popover-close { color: #0a0a0a; }
+
+        /* [결과 셀 — 인라인 결과 패널 공용] */
+        .results-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 4px; }
+        .result-cell {
+            background: var(--inner-section-bg);
+            border: 1px solid var(--inner-section-border);
+            border-radius: 10px;
+            padding: 8px 4px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-height: 50px;
+        }
+        .result-cell.empty { opacity: 0.45; }
+        .result-label { font-size: 12px; font-weight: 700; color: var(--text-primary); line-height: 1.1; letter-spacing: -0.01em; }
+        .result-label .badge { color: var(--accent-mint); font-size: 10px; font-weight: 700; margin-left: 2px; }
+        .result-times { display: flex; flex-direction: column; gap: 1px; font-family: var(--font-mono); font-size: 11px; color: var(--text-primary); line-height: 1.25; }
+        .result-time .idx { display: inline-block; color: var(--text-secondary); margin-right: 3px; font-size: 10px; }
+        .result-time.muted { color: var(--text-tertiary); }
+        .result-time.sum { color: var(--accent-mint); font-weight: 700; border-top: 1px solid var(--inner-section-border); padding-top: 2px; margin-top: 2px; }
+
+        /* [브리딩 타이머] */
+        .timer-container {
+            position: relative;
+            /* 문항 그리드의 약 4/5(=4문항) 폭만큼 크게 */
+            width: min(360px, 80%);
+            aspect-ratio: 1 / 1;
+            margin: 24px auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* 초반(0~50%)은 초록 → 50% 노랑 → 95% 빨강 으로 진행 */
+            --timer-color: #16a34a;
+            --timer-glow: rgba(22, 163, 74, 0.28);
+        }
+        body.dark .timer-container { --timer-color: #34d399; --timer-glow: rgba(52, 211, 153, 0.34); }
+        .timer-container.theme-yellow { --timer-color: #eab308; --timer-glow: rgba(234, 179, 8, 0.35); }
+        .timer-container.theme-red { --timer-color: #ef4444; --timer-glow: rgba(239, 68, 68, 0.42); }
+        .breathing-circle {
+            position: absolute; inset: 0;
+            border-radius: 50%;
+            border: 2px solid var(--timer-color);
+            opacity: 0.28;
+            box-shadow: 0 0 0 0 var(--timer-glow);
+            transition: border-color 0.8s ease, opacity 0.4s ease;
+        }
+        .timer-container.running .breathing-circle { animation: breathe-circle 4.5s ease-in-out infinite; }
+        @keyframes breathe-circle {
+            0%, 100% { transform: scale(0.9); opacity: 0.25; box-shadow: 0 0 0 0 var(--timer-glow); }
+            50% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 40px 8px var(--timer-glow); }
+        }
+        .timer-container .timer-display {
+            position: relative;
+            margin: 0;
+            z-index: 1;
+            color: var(--timer-color);
+            text-shadow: 0 0 24px var(--timer-glow);
+            transition: color 0.8s ease, text-shadow 0.8s ease;
+        }
+
+        /* [아날로그 시계] */
+        .analog-clock {
+            position: relative;
+            z-index: 1;
+            width: 98%;
+            height: 98%;
+            display: none;
+            filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.35));
+        }
+        .analog-readout {
+            position: absolute;
+            bottom: -28px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            display: none;
+            letter-spacing: 0.05em;
+        }
+        .timer-container.mode-analog .analog-clock { display: block; }
+        .timer-container.mode-analog .timer-display { display: none; }
+        .timer-container.mode-analog .analog-readout { display: block; }
+        /* 아날로그 모드에선 브리딩 링 숨김 → 시계만 깔끔하게 */
+        .timer-container.mode-analog .breathing-circle { display: none; }
+
+        /* [수능 시계 스타일 — 흰 다이얼 · 검정 베젤 · 굵은 숫자 · 점 마커] */
+        .ac-case { fill: #181a1f; }
+        .ac-bezel { fill: none; stroke: #34373d; stroke-width: 1.5; }
+        .ac-face { fill: #ffffff; }
+        .ac-dots circle { fill: #2c2f36; }
+        .ac-dots circle.major { fill: #15171c; }
+        .ac-numbers text {
+            fill: #15171c;
+            font-size: 18px;
+            font-weight: 800;
+            font-family: var(--font-display);
+            text-anchor: middle;
+            dominant-baseline: central;
+        }
+        .ac-hour, .ac-minute {
+            stroke: #15171c;
+            stroke-linecap: round;
+            transform-box: view-box;
+            transform-origin: 100px 100px;
+            transition: transform 0.5s linear;
+        }
+        .ac-hour { stroke-width: 5.5; }
+        .ac-minute { stroke-width: 3.4; }
+        .ac-second {
+            stroke: var(--accent);
+            stroke-width: 1.4;
+            stroke-linecap: round;
+            transform-box: view-box;
+            transform-origin: 100px 100px;
+            transition: transform 0.3s linear;
+        }
+        .ac-center { fill: #15171c; }
+        .ac-center-inner { fill: var(--accent); }
+
+        /* [정답 모아보기 — 결과 패널 내부에서만 사용] */
+        .answer-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 4px;
+        }
+        .answer-summary-cell {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--inner-item-bg);
+            border: 1px solid var(--inner-section-border);
+            border-radius: 6px;
+            font-size: 11px;
+            line-height: 1;
+            box-shadow: var(--inner-item-shadow);
+            transition: background 0.15s ease, border-color 0.15s ease;
+        }
+        .answer-summary-cell .ans-num { color: var(--text-tertiary); font-size: 9px; font-weight: 600; margin-bottom: 2px; }
+        .answer-summary-cell .ans-val { color: var(--accent-mint); font-weight: 700; font-size: 13px; }
+        .answer-summary-cell.empty .ans-val { color: var(--text-tertiary); font-weight: 400; }
+        .answer-summary-cell.text .ans-val { font-size: 11px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 2px; }
+
+        /* [인라인 결과 패널] */
+        .results-inline {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--inner-section-bg);
+            border: 1px solid var(--inner-section-border);
+            border-radius: 14px;
+            text-align: left;
+            animation: fadeIn 0.25s ease;
+        }
+        .results-inline-title { font-size: 17px; font-weight: 700; color: var(--text-primary); text-align: center; margin-bottom: 14px; }
+        .results-inline .results-grid { margin-bottom: 0; grid-template-columns: repeat(4, 1fr); }
+        .results-inline .lap-row.total {
+            background: transparent;
+            border-top: 1px solid var(--inner-section-border);
+            margin-top: 10px;
+            padding: 12px 14px 4px;
+            border-radius: 0;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        .results-inline .lap-row.total .label { color: var(--text-secondary); }
+        .results-inline .lap-row.total .value { font-family: var(--font-mono); font-weight: 700; }
+        .results-inline-retry {
+            width: 100%;
+            margin-top: 14px;
+            padding: 14px;
+            background: var(--accent-mint);
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: filter 0.15s ease, transform 0.1s ease;
+        }
+        .results-inline-retry:hover { filter: brightness(1.08); }
+        .results-inline-retry:active { transform: scale(0.98); }
+        body.dark .results-inline-retry { color: #0a0a0a; }
+
+        /* [결과 — 페이스 분포 타임라인 (시간 운용)] */
+        .rt-sub { font-size: 11px; font-weight: 600; color: var(--text-tertiary); letter-spacing: 0.04em; margin-left: 4px; }
+        .pace-dist { margin: 2px 0 6px; }
+        .pace-dist__bar {
+            position: relative;
+            height: 28px;
+            border-radius: 8px;
+            background: var(--inner-item-bg);
+            border: 1px solid var(--inner-section-border);
+            overflow: hidden;
+        }
+        /* 50% 기준선 (중간 지점) */
+        .pace-dist__bar::after {
+            content: ""; position: absolute; top: 0; bottom: 0; left: 50%;
+            width: 1px; background: var(--lane);
+        }
+        .pace-dist__seg {
+            position: absolute; top: 0; bottom: 0;
+            background: var(--accent);
+            opacity: 0.9;
+            box-shadow: inset -1px 0 0 var(--card-bg);
+        }
+        .pace-dist__seg.alt { opacity: 0.55; }
+        .pace-dist__axis {
+            display: flex; justify-content: space-between;
+            margin-top: 7px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-tertiary);
+        }
+        .pace-dist__legend { font-size: 11px; color: var(--text-tertiary); margin-top: 6px; line-height: 1.4; }
+
+        /* [하단 네비게이션] */
+        .bottom-nav {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: max(14px, env(safe-area-inset-bottom));
+            z-index: 150;
+            width: min(540px, calc(100% - 24px));
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            padding: 8px;
+            border-radius: 26px;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.14), 0 -2px 8px rgba(15, 23, 42, 0.04);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        body.dark .bottom-nav {
+            background: rgba(27, 27, 29, 0.82);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 -2px 8px rgba(0, 0, 0, 0.35);
+        }
+        .bottom-nav__item {
+            background: transparent;
+            border: none;
+            padding: 8px 4px;
+            min-height: 54px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            text-decoration: none;
+            border-radius: 20px;
+            transition: color 0.2s ease, background 0.2s ease, transform 0.1s ease;
+            font-family: inherit;
+        }
+        .bottom-nav__item .nav-icon { font-size: 20px; line-height: 1; }
+        .bottom-nav__item:hover { color: var(--text-primary); background: rgba(15, 23, 42, 0.05); }
+        body.dark .bottom-nav__item:hover { background: rgba(255, 255, 255, 0.06); }
+        .bottom-nav__item:active { transform: scale(0.96); }
+        .bottom-nav__item.active { background: var(--accent); color: var(--on-accent); box-shadow: 0 4px 14px var(--accent-soft); }
+
+        body { padding-bottom: 96px; }
+
+        /* [이해원 연구소 교재] */
+        .book-section { margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--card-border); text-align: left; }
+        .book-section-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 14px; }
+        .book-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .book-link {
+            display: block;
+            border-radius: 10px;
+            overflow: hidden;
+            text-decoration: none;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .book-link:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08); }
+        .book-thumb {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            background: var(--inner-item-bg);
+            border: 1px solid var(--inner-section-border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .book-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        @media (max-width: 480px) {
+            .white-box { padding: 25px; }
+            h1 { font-size: 22px; }
+            .timer-display { font-size: 48px; }
+            .timer-buttons { flex-wrap: wrap; }
+            .timer-buttons .btn { flex: 1 1 45%; }
+            .question-cell .num { font-size: 13px; }
+            .question-cell .time { font-size: 9px; }
+            .answer-summary-cell .ans-num { font-size: 8px; }
+            .answer-summary-cell .ans-val { font-size: 12px; }
+            .setting-options { grid-template-columns: repeat(auto-fit, minmax(95px, 1fr)); }
+            .setting-options label { padding: 10px 6px; font-size: 12px; }
+        }
+
+        /* [넓은 화면(PC/태블릿 가로) — 문항별 기록 2단 레이아웃]
+           좌: 시계+문항표 / 우: 답안 독(스티키). 주관식 OMR은 세로 컬럼.
+           body.tl-grid 는 '타이머 화면 + 문항별 기록 모드'일 때만 부여됨. */
+        @media (min-width: 880px) {
+            body.tl-grid .container { max-width: 1000px; }
+            body.tl-grid .timer-layout {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) 360px;
+                gap: 30px;
+                align-items: start;
+                margin-top: 8px;
+            }
+            body.tl-grid .timer-main { text-align: center; }
+            body.tl-grid .timer-side { position: sticky; top: 16px; }
+            body.tl-grid .answer-dock { margin-top: 0; }
+            /* 객관식 그룹: 한 줄에 한 문제 */
+            body.tl-grid .dock-members { display: block; }
+            /* 단답형 그룹: 두 문제 나란히(1×2) — 세로로 안 길어지게 */
+            body.tl-grid .dock-members.is-numeric { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+            body.tl-grid .dock-members.is-numeric .dock-member { flex-direction: column; align-items: stretch; gap: 4px; padding: 6px 0; border-top: none; }
+            body.tl-grid .dock-members.is-numeric .dock-member-label { width: auto; padding-top: 0; }
+            /* 주관식 OMR — 백/십/일 세로 컬럼(0~9 위→아래), 버튼 더 좁게 */
+            body.tl-grid .dock-omr { flex-direction: row; justify-content: center; gap: 6px; }
+            body.tl-grid .dock-omr-group { flex-direction: column; align-items: center; gap: 4px; width: 44px; max-width: 44px; }
+            body.tl-grid .dock-omr-label { width: auto; margin-bottom: 2px; }
+            body.tl-grid .dock-omr-digits { grid-template-columns: 1fr; gap: 4px; width: 100%; }
+            body.tl-grid .dock-digit { aspect-ratio: auto; height: 28px; font-size: 13px; }
+            /* 완주 후: 2단을 단일 단으로 접고(빈 답안칸 제거) 결과를 중앙 표시 */
+            body.tl-grid.race-finished .container { max-width: 600px; }
+            body.tl-grid.race-finished .timer-layout { display: block; }
+            body.tl-grid.race-finished .timer-side { display: none; }
+            body.tl-grid.race-finished .results-inline { max-width: none; }
+        }
+
+        /* =========================================================
+           [역동적 모션 — timer7 추가]
+           · 연속 루프(트랙 흐름·bob·펄스·글로우)는 순수 CSS (GPU friendly).
+           · 1회성 연출(진입·카운트업·바 성장·컨페티)은 JS(GSAP)에서 처리.
+           · 모든 모션은 아래 prefers-reduced-motion 가드로 비활성화됨.
+           ========================================================= */
+
+        /* --- 타이머: 트랙 레인 흐름 (달리는 도로 느낌) --- */
+        .pace-track__lane::before {
+            content: ""; position: absolute; inset: 0;
+            border-radius: inherit;
+            background-image: repeating-linear-gradient(45deg,
+                var(--track-stripe) 0 8px, transparent 8px 16px);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+        body.race-running .pace-track__lane::before {
+            opacity: 1;
+            animation: track-flow 0.8s linear infinite;
+        }
+        /* 45° 줄무늬 1주기(=16px) 만큼 대각 이동 → 이음새 없는 무한 흐름 */
+        @keyframes track-flow { to { background-position: -11.314px 11.314px; } }
+
+        /* --- 타이머: 러너/페이서 마커 bob·hop (base transform 보존) --- */
+        body.race-running .pace-marker--runner { animation: runner-bob 0.5s ease-in-out infinite; }
+        @keyframes runner-bob {
+            0%, 100% { transform: translate(-50%, -50%) scaleX(-1); }
+            50%      { transform: translate(-50%, -66%) scaleX(-1); }
+        }
+        body.race-running .pace-marker--pacer { animation: pacer-hop 0.62s ease-in-out infinite; }
+        @keyframes pacer-hop {
+            0%, 100% { transform: translate(-50%, -50%) scaleX(-1); }
+            42%      { transform: translate(-50%, -72%) scaleX(-1); }
+        }
+
+        /* --- 타이머: 페이스 피드백 글로우 펄스 (앞섬=녹·뒤처짐=앰버, currentColor 사용) --- */
+        .pace-feedback.ahead, .pace-feedback.behind { animation: feedback-pulse 1.4s ease-in-out infinite; }
+        @keyframes feedback-pulse {
+            0%, 100% { text-shadow: none; }
+            50%      { text-shadow: 0 0 10px currentColor; }
+        }
+
+        /* --- 타이머: 구간 도달 마일스톤 플래시 (50%/95% 진입 순간 1회) --- */
+        .timer-container.milestone-flash { animation: milestone-flash 0.7s ease-out; }
+        @keyframes milestone-flash {
+            0%   { transform: scale(1); }
+            30%  { transform: scale(1.045); }
+            100% { transform: scale(1); }
+        }
+        /* 레이더 핑 링 (브리딩 링 위에 한 번 퍼짐) */
+        .timer-container.milestone-flash .breathing-circle::after {
+            content: ""; position: absolute; inset: -2px;
+            border-radius: 50%;
+            border: 2px solid var(--timer-color);
+            animation: milestone-ring 0.7s ease-out forwards;
+            pointer-events: none;
+        }
+        @keyframes milestone-ring {
+            0%   { transform: scale(1);   opacity: 0.7; }
+            100% { transform: scale(1.25); opacity: 0; }
+        }
+        /* 막판(빨강)엔 호흡을 빠르게 → 긴박감 */
+        .timer-container.urgent.running .breathing-circle { animation-duration: 1.7s; }
+
+        /* --- 타이머: 마지막 카운트다운 숫자 pop --- */
+        .timer-display.tick-pop { animation: tick-pop 0.32s ease-out; }
+        @keyframes tick-pop {
+            0%   { transform: scale(1); }
+            40%  { transform: scale(1.12); }
+            100% { transform: scale(1); }
+        }
+
+        /* --- 메인: 시작 CTA 은은한 주목 펄스 (box-shadow만 → hover transform과 무충돌) --- */
+        .hero-cta { animation: cta-pulse 2.6s ease-in-out infinite; }
+        @keyframes cta-pulse {
+            0%, 100% { box-shadow: 0 6px 18px var(--accent-soft); }
+            50%      { box-shadow: 0 12px 32px rgba(126, 108, 232, 0.5); }
+        }
+        body.dark .hero-cta { animation: cta-pulse-dark 2.6s ease-in-out infinite; }
+        @keyframes cta-pulse-dark {
+            0%, 100% { box-shadow: 0 6px 18px var(--accent-soft); }
+            50%      { box-shadow: 0 12px 34px rgba(179, 164, 245, 0.55); }
+        }
+
+        /* --- 메인: 교재 카드 호버 강화 (들림 + 이미지 줌) --- */
+        .book-link { transition: transform 0.22s ease, box-shadow 0.22s ease; }
+        .book-link:hover { transform: translateY(-5px) scale(1.025); box-shadow: 0 14px 28px rgba(40, 30, 90, 0.16); }
+        .book-thumb img { transition: transform 0.35s ease; }
+        .book-link:hover .book-thumb img { transform: scale(1.07); }
+
+        /* --- 설정: 옵션 pill 선택 시 pop (선택 전환마다 재실행) --- */
+        .setting-options label:has(input:checked) { animation: pill-pop 0.28s ease; }
+        @keyframes pill-pop {
+            0%   { transform: scale(0.94); }
+            55%  { transform: scale(1.06); }
+            100% { transform: scale(1); }
+        }
+
+        /* --- 설정: 출발 원형 CTA 헤일로 펄스 --- */
+        .launch-circle { animation: launch-pulse 2.4s ease-in-out infinite; }
+        @keyframes launch-pulse {
+            0%, 100% { box-shadow: 0 10px 26px var(--accent-soft); }
+            50%      { box-shadow: 0 10px 30px var(--accent-soft), 0 0 0 9px var(--accent-soft); }
+        }
+
+        /* --- 결과: 만점 배너 --- */
+        .perfect-banner {
+            text-align: center;
+            margin: 2px 0 12px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            color: var(--on-accent);
+            background: linear-gradient(110deg, var(--accent-strong), var(--accent) 45%, var(--pacer));
+            background-size: 200% 100%;
+            box-shadow: 0 8px 24px var(--accent-soft);
+            animation: perfect-pop 0.5s ease-out, perfect-shine 2.6s linear infinite 0.5s;
+        }
+        @keyframes perfect-pop {
+            0%   { transform: scale(0.8); opacity: 0; }
+            60%  { transform: scale(1.04); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes perfect-shine { to { background-position: -200% 0; } }
+
+        /* =========================================================
+           [접근성 — 동작 줄이기]
+           OS '동작 줄이기' 켜면 신규 무한/진입 애니 전부 비활성화.
+           ========================================================= */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.001ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="다크모드 전환">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <div class="container">
+        <img src="https://cdn.imweb.me/thumbnail/20251022/5f0f79023d456.png" alt="INTEGRATE" class="main-logo">
+        <span class="logo-text">INTEGRATE</span>
+
+        <div class="white-box">
+
+            <!-- 메인 화면 -->
+            <div id="main-screen" class="screen active">
+                <div class="hero">
+                    <span class="hero-badge"><span class="hero-badge__dot"></span>100분 레이스 · 시간 운용</span>
+                    <h1 class="hero-title">이해원 모의고사 <span class="hero-accent">Final</span></h1>
+                    <p class="hero-sub">100분, 당신의 페이스로 완주하라.<br>실전처럼 달리고 시간 운용을 기록하세요.</p>
+                    <button class="btn btn-mint hero-cta" onclick="showScreen('settings')">
+                        🏁 레이스 시작
+                    </button>
+                </div>
+                <div class="main-secondary">
+                    <a href="https://integrate.kr/column/?q=YToxOntzOjEyOiJrZXl3b3JkX3R5cGUiO3M6MzoiYWxsIjt9&bmode=view&idx=170013700&t=board" target="_blank" class="btn btn-pink">
+                        📰 타임라인 가이드
+                    </a>
+                    <button class="btn btn-pink" onclick="showScreen('image')">
+                        🗺️ 단계별 전략
+                    </button>
+                </div>
+
+                <div class="book-section">
+                    <p class="book-section-title">📚 이해원 연구소 교재</p>
+                    <div class="book-grid">
+                        <a href="https://sdijbooks.com/books/series/312" target="_blank" class="book-link" aria-label="한시수">
+                            <div class="book-thumb"><img src="1.png" alt="한시수"></div>
+                        </a>
+                        <a href="https://sdijbooks.com/books/series/384" target="_blank" class="book-link" aria-label="한완수">
+                            <div class="book-thumb"><img src="2.png" alt="한완수"></div>
+                        </a>
+                        <a href="https://sdijbooks.com/books/series/383" target="_blank" class="book-link" aria-label="한완기">
+                            <div class="book-thumb"><img src="3.png" alt="한완기"></div>
+                        </a>
+                        <a href="https://sdijbooks.com/books/series/416" target="_blank" class="book-link" aria-label="한완기 실전편">
+                            <div class="book-thumb"><img src="4.png" alt="한완기 실전편"></div>
+                        </a>
+                        <a href="https://sdijbooks.com/books/series/415" target="_blank" class="book-link" aria-label="이해원 N제">
+                            <div class="book-thumb"><img src="5.png" alt="이해원 N제"></div>
+                        </a>
+                        <a href="https://sdijbooks.com/books/series/335" target="_blank" class="book-link" aria-label="이해원 모의고사">
+                            <div class="book-thumb"><img src="6.png" alt="이해원 모의고사"></div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 단계별 전략 화면 -->
+            <div id="image-screen" class="screen">
+                <h1>단계별 전략 수립</h1>
+                <div class="image-container">
+                    <img src="단계별_전략.png" alt="단계별 전략">
+                    <button class="btn btn-back" onclick="goBackToMain()">
+                        ← 뒤로 가기
+                    </button>
+                </div>
+            </div>
+
+            <!-- 타이머 설정 화면 -->
+            <div id="settings-screen" class="screen">
+                <h1>🏁 레이스 설정</h1>
+                <form id="timer-settings-form">
+                    <div class="setting-section">
+                        <h3>1. 타이머 종류</h3>
+                        <div class="setting-options">
+                            <label><input type="radio" name="mode" value="vanilla" checked><span>기본</span></label>
+                            <label><input type="radio" name="mode" value="lap"><span>일반 lap 기록</span></label>
+                            <label><input type="radio" name="mode" value="grid"><span>문항별 기록</span></label>
+                        </div>
+
+                        <!-- 문항별 기록 선택 시 펼쳐지는 채점 옵션 -->
+                        <div class="grading-options" id="grading-options" style="display: none;">
+                            <span class="sub-label">시험 모드</span>
+                            <div class="setting-options">
+                                <label><input type="radio" name="round" value="default" checked><span>기본 (채점 X)</span></label>
+                                <label><input type="radio" name="round" value="0회"><span>Final 0회</span></label>
+                                <label class="disabled"><input type="radio" name="round" value="1회" disabled><span>Final 1회 (준비중)</span></label>
+                            </div>
+                            <span class="sub-label">선택과목</span>
+                            <div class="setting-options">
+                                <label><input type="radio" name="subject" value="확률과통계" checked><span>확률과통계</span></label>
+                                <label><input type="radio" name="subject" value="미적분"><span>미적분</span></label>
+                                <label><input type="radio" name="subject" value="기하"><span>기하</span></label>
+                            </div>
+                            <span class="opt-hint">※ Final 0회는 모든 선택과목 정답이 동일합니다 (실제 정답 미확정).</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-section">
+                        <h3>2. 오디오</h3>
+                        <span class="sub-label">시험 안내방송</span>
+                        <div class="setting-options">
+                            <label><input type="radio" name="info" value="none" checked><span>무음</span></label>
+                            <label><input type="radio" name="info" value="on"><span>안내방송 ON</span></label>
+                        </div>
+                        <span class="sub-label">ASMR (시험장 분위기)</span>
+                        <div class="setting-options">
+                            <label><input type="radio" name="asmr" value="none" checked><span>무음</span></label>
+                            <label><input type="radio" name="asmr" value="basic"><span>기본</span></label>
+                            <label><input type="radio" name="asmr" value="hell"><span>HELL</span></label>
+                        </div>
+                        <span class="opt-hint">※ 안내방송 ON은 동작합니다. ASMR/HELL은 준비 중.</span>
+                    </div>
+
+                    <div class="setting-section">
+                        <h3>3. 디스플레이</h3>
+                        <div class="setting-options">
+                            <label><input type="radio" name="display" value="digital" checked><span>디지털</span></label>
+                            <label><input type="radio" name="display" value="analog"><span>아날로그 (10:30~12:10)</span></label>
+                        </div>
+                        <span class="opt-hint">※ 시각적인 시계 표시 (시간 진행은 동일).</span>
+                    </div>
+
+                    <div class="setting-section">
+                        <h3>4. 타임 어택</h3>
+                        <div class="setting-options">
+                            <label><input type="radio" name="speed" value="1" checked><span>기본 (100분)</span></label>
+                            <label><input type="radio" name="speed" value="1.111"><span>10% 단축 (90분)</span></label>
+                            <label><input type="radio" name="speed" value="1.25"><span>20% 단축 (80분)</span></label>
+                        </div>
+                    </div>
+
+                    <div class="launch-bar">
+                        <div class="launch-info">
+                            <p class="launch-info__title">출발 준비 완료</p>
+                            <p class="launch-info__sub">설정을 확인하고 출발하세요</p>
+                        </div>
+                        <button type="button" class="launch-circle" onclick="applySettingsAndStart()" aria-label="레이스 출발">
+                            <span class="launch-circle__icon">▶</span>
+                            <span class="launch-circle__label">출발</span>
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn-back" onclick="goBackToMain()">
+                        ← 뒤로 가기
+                    </button>
+                </form>
+            </div>
+
+            <!-- 타이머 화면 -->
+            <div id="timer-screen" class="screen">
+                <h1 id="timer-title">⏱️ 100분 타이머</h1>
+                <p class="timer-hint" id="timer-hint">💡 [시작]을 누르면 타이머가 작동합니다.</p>
+                <div class="timer-layout" id="timer-layout">
+                <div class="timer-main">
+                <p class="timer-label">경과 시간</p>
+                <div class="timer-container mode-digital" id="timer-container">
+                    <div class="breathing-circle"></div>
+                    <div class="timer-display" id="timer-display">00:00</div>
+                    <svg class="analog-clock" id="analog-clock" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+                        <circle cx="100" cy="100" r="99" class="ac-case" />
+                        <circle cx="100" cy="100" r="88" class="ac-bezel" />
+                        <circle cx="100" cy="100" r="86" class="ac-face" />
+                        <g class="ac-dots" id="ac-markers"></g>
+                        <g class="ac-numbers">
+                            <text x="100" y="40">12</text>
+                            <text x="131" y="48">1</text>
+                            <text x="154" y="69">2</text>
+                            <text x="162" y="100">3</text>
+                            <text x="154" y="131">4</text>
+                            <text x="131" y="152">5</text>
+                            <text x="100" y="160">6</text>
+                            <text x="69" y="152">7</text>
+                            <text x="46" y="131">8</text>
+                            <text x="38" y="100">9</text>
+                            <text x="46" y="69">10</text>
+                            <text x="69" y="48">11</text>
+                        </g>
+                        <line class="ac-hour" id="ac-hour" x1="100" y1="108" x2="100" y2="58" />
+                        <line class="ac-minute" id="ac-minute" x1="100" y1="110" x2="100" y2="38" />
+                        <line class="ac-second" id="ac-second" x1="100" y1="114" x2="100" y2="32" />
+                        <circle cx="100" cy="100" r="4.5" class="ac-center" />
+                        <circle cx="100" cy="100" r="2" class="ac-center-inner" />
+                    </svg>
+                    <div class="analog-readout" id="analog-readout">10:30</div>
+                </div>
+
+                <!-- 페이스메이커 트랙 (Race) — 나(🏃) vs 권장 페이스(🐇) -->
+                <div class="pace-track" id="pace-track">
+                    <div class="pace-track__lane">
+                        <div class="pace-track__fill" id="pace-fill"></div>
+                        <div class="pace-marker pace-marker--pacer" id="pace-pacer" aria-label="권장 페이스">🐇</div>
+                        <div class="pace-marker pace-marker--runner" id="pace-runner" aria-label="나">🏃</div>
+                    </div>
+                    <div class="pace-track__labels">
+                        <span class="pace-end">출발</span>
+                        <span class="pace-feedback" id="pace-feedback">출발 대기 중</span>
+                        <span class="pace-end">피니시 🏁</span>
+                    </div>
+                </div>
+
+                <div class="timer-buttons">
+                    <button class="btn btn-start" id="start-btn" onclick="toggleTimer()">
+                        ▶ 시작
+                    </button>
+                    <button class="btn btn-reset" onclick="resetTimer()">
+                        ↺ 리셋
+                    </button>
+                </div>
+
+                <!-- lap 모드 — 단계별 기록 (최대 4회, 사전 정의 라벨) -->
+                <div class="lap-record-container" id="lap-record-container">
+                    <button class="btn btn-record" id="lap-record-btn" type="button" onclick="recordSimpleLap()">📌 기록</button>
+                    <div class="lap-list timestamp-list" id="simple-lap-list">
+                        <div class="timestamp-item empty">기록 없음</div>
+                    </div>
+                    <p class="record-count" id="record-count">남은 기록 횟수: 4회</p>
+                </div>
+
+                <!-- 문항별 기록 — 30셀 그리드 -->
+                <div class="question-grid-section" id="question-grid-section">
+                    <p class="grid-label">공통 (1~22)</p>
+                    <div class="question-grid grid-common" id="grid-common"></div>
+                    <p class="grid-label">선택 (23~30)</p>
+                    <div class="question-grid grid-select" id="grid-select"></div>
+                </div>
+                </div><!-- /timer-main -->
+                <div class="timer-side" id="timer-side">
+                    <!-- 고정 답안 독 (모달 대신 인라인 입력) -->
+                    <div class="answer-dock" id="answer-dock"></div>
+                </div>
+                </div><!-- /timer-layout -->
+
+                <div class="results-inline" id="results-inline" style="display: none;"></div>
+
+                <button class="btn btn-back" onclick="goBackToMain()">
+                    ← 뒤로 가기
+                </button>
+            </div>
+
+        </div>
+
+        <footer class="ig-footer">
+            <div class="ig-footer__sns">
+                <a href="https://www.instagram.com/lhw_math/" target="_blank" class="ig-sns ig-sns--instagram" id="sns-insta">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" ry="5" fill="none" stroke="currentColor" stroke-width="2"></rect><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"></circle><circle cx="17" cy="7" r="1.4" fill="currentColor"></circle></svg>
+                </a>
+                <a href="https://cafe.naver.com/pnmath" target="_blank" class="ig-sns ig-sns--naver" id="sns-naver">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"></rect><path d="M7.5 17.5V6.5h3.1l3.9 6.6V6.5h3v11h-3.1l-3.9-6.6v6.6h-3z" fill="currentColor"></path></svg>
+                </a>
+            </div>
+            <div class="ig-footer__info">
+                <p>주소 : 서울특별시 강남구 선릉로 608 (삼성동, 선진빌딩 6층)</p>
+                <p>㈜ 인터그레이트 | 대표이사: 이해원</p>
+                <p>사업자등록번호: 401-87-02099</p>
+                <p>이메일: <a href="mailto:info@integrate.kr">info@integrate.kr</a></p>
+            </div>
+            <p class="ig-footer__copyright">Copyright © 2025 ㈜ 인터그레이트 All rights reserved.</p>
+        </footer>
+    </div>
+
+    <nav class="bottom-nav" id="bottom-nav">
+        <button type="button" class="bottom-nav__item" data-nav="main" onclick="navTo('main')">
+            <span class="nav-icon">🏠</span>
+            <span>홈</span>
+        </button>
+        <a href="https://integrate.kr/column/?q=YToxOntzOjEyOiJrZXl3b3JkX3R5cGUiO3M6MzoiYWxsIjt9&bmode=view&idx=170013700&t=board" target="_blank" class="bottom-nav__item" data-nav="timeline">
+            <span class="nav-icon">📰</span>
+            <span>타임라인</span>
+        </a>
+        <button type="button" class="bottom-nav__item" data-nav="image" onclick="navTo('image')">
+            <span class="nav-icon">🗺️</span>
+            <span>전략</span>
+        </button>
+        <button type="button" class="bottom-nav__item" data-nav="settings" onclick="navTo('settings')">
+            <span class="nav-icon">⏱️</span>
+            <span>타이머</span>
+        </button>
+    </nav>
+
+    <script>
+        // ==========================================
+        // 다크/라이트 모드 토글
+        // ==========================================
+        (function() {
+            const SUN_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>';
+            const MOON_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+            const toggle = document.getElementById('theme-toggle');
+            function setTheme(isDark) {
+                if (isDark) {
+                    document.body.classList.add('dark');
+                    toggle.innerHTML = SUN_SVG;
+                    toggle.setAttribute('aria-label', '라이트모드 전환');
+                } else {
+                    document.body.classList.remove('dark');
+                    toggle.innerHTML = MOON_SVG;
+                    toggle.setAttribute('aria-label', '다크모드 전환');
+                }
+                try { localStorage.setItem('timer-theme', isDark ? 'dark' : 'light'); } catch (e) {}
+            }
+            let stored = null;
+            try { stored = localStorage.getItem('timer-theme'); } catch (e) {}
+            setTheme(stored === 'dark');
+            toggle.addEventListener('click', function() {
+                setTheme(!document.body.classList.contains('dark'));
+            });
+        })();
+
+        // ==========================================
+        // 모션 헬퍼 (GSAP 진입 연출 · 스크롤 리빌 · 결과 애니)
+        //  · GSAP 미로드(오프라인 등) 또는 '동작 줄이기' 시 전부 no-op 으로 폴백.
+        // ==========================================
+        function motionOK() {
+            return !!window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        }
+        if (window.gsap && window.ScrollTrigger) {
+            try { gsap.registerPlugin(ScrollTrigger); } catch (e) {}
+        }
+
+        // 화면 진입 시 부드러운 페이드+슬라이드. 메인은 자식 stagger 시퀀스.
+        function animateScreenIn(screen) {
+            if (!motionOK()) return;
+            const el = document.getElementById(screen + '-screen');
+            if (!el) return;
+            if (screen === 'main') { animateMainEntrance(el); return; }
+            gsap.killTweensOf(el);
+            gsap.fromTo(el, { autoAlpha: 0, y: 14 },
+                { autoAlpha: 1, y: 0, duration: 0.4, ease: 'power2.out', clearProps: 'transform,opacity,visibility' });
+        }
+
+        // 메인: 히어로 배지→타이틀→서브→CTA→보조내비→교재 순차 등장
+        function animateMainEntrance(root) {
+            const main = root || document.getElementById('main-screen');
+            if (!motionOK() || !main) return;
+            const seq = [
+                main.querySelector('.hero-badge'),
+                main.querySelector('.hero-title'),
+                main.querySelector('.hero-sub'),
+                main.querySelector('.hero-cta'),
+                main.querySelector('.main-secondary'),
+                main.querySelector('.book-section-title')
+            ].filter(Boolean);
+            gsap.killTweensOf(seq);
+            gsap.fromTo(seq, { autoAlpha: 0, y: 18 },
+                { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power3.out', stagger: 0.08, clearProps: 'all' });
+            // 교재 카드는 ScrollTrigger 가 담당 → 진입 시 한번 갱신
+            if (window.ScrollTrigger) { try { ScrollTrigger.refresh(); } catch (e) {} }
+        }
+
+        // 교재 카드 스크롤 리빌 (뷰포트 진입 시 1회)
+        function setupScrollReveals() {
+            if (!motionOK() || !window.ScrollTrigger) return;
+            const books = gsap.utils.toArray('#main-screen .book-link');
+            if (!books.length) return;
+            gsap.set(books, { autoAlpha: 0, y: 22 });
+            ScrollTrigger.batch(books, {
+                start: 'top 92%',
+                once: true,
+                onEnter: (batch) => gsap.to(batch, {
+                    autoAlpha: 1, y: 0, duration: 0.5, ease: 'power2.out', stagger: 0.07, clearProps: 'transform'
+                })
+            });
+        }
+
+        // 결과 패널 등장 연출: 점수 카운트업 · 요약 grid pop · 분포바 성장 · 스플릿 슬라이드업
+        function animateResults(panel, grade) {
+            if (!motionOK() || !panel) return;
+            // 컨테이너는 transform 슬라이드만 (opacity 는 CSS fadeIn 이 담당 → 충돌 방지)
+            gsap.from(panel, { y: 24, duration: 0.5, ease: 'power2.out', clearProps: 'transform' });
+            if (grade) {
+                const scoreEl = panel.querySelector('.score-total');
+                if (scoreEl) {
+                    const target = grade.totalScore;
+                    const obj = { v: 0 };
+                    gsap.to(obj, {
+                        v: target, duration: 0.9, ease: 'power1.out', delay: 0.15,
+                        onUpdate: () => { scoreEl.textContent = Math.round(obj.v); },
+                        onComplete: () => { scoreEl.textContent = target; }
+                    });
+                }
+            }
+            const cells = panel.querySelectorAll('.answer-summary-cell');
+            if (cells.length) gsap.from(cells, {
+                autoAlpha: 0, scale: 0.6, duration: 0.3, ease: 'back.out(1.7)',
+                stagger: 0.012, delay: 0.2, clearProps: 'all'
+            });
+            const segs = panel.querySelectorAll('.pace-dist__seg');
+            if (segs.length) gsap.from(segs, {
+                scaleX: 0, transformOrigin: 'left center', duration: 0.5, ease: 'power2.out',
+                stagger: 0.01, delay: 0.35, clearProps: 'transform'
+            });
+            const splits = panel.querySelectorAll('.result-cell');
+            if (splits.length) gsap.from(splits, {
+                autoAlpha: 0, y: 12, duration: 0.3, ease: 'power2.out',
+                stagger: 0.008, delay: 0.4, clearProps: 'all'
+            });
+        }
+
+        // 만점 컨페티 (gsap 유무와 무관 · 동작 줄이기 시 생략)
+        function fireConfetti() {
+            if (!window.confetti) return;
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const colors = ['#7e6ce8', '#b3a4f5', '#f59e42', '#16a34a'];
+            confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 }, colors: colors });
+            setTimeout(() => confetti({ particleCount: 55, angle: 60, spread: 55, origin: { x: 0 }, colors: colors }), 150);
+            setTimeout(() => confetti({ particleCount: 55, angle: 120, spread: 55, origin: { x: 1 }, colors: colors }), 300);
+        }
+
+        // ==========================================
+        // 화면별 줌 제어
+        // ==========================================
+        function setZoomEnabled(enabled) {
+            const viewport = document.getElementById('viewport-meta');
+            if (enabled) {
+                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes');
+            } else {
+                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+            }
+        }
+
+        // ==========================================
+        // 타이머 기본 상태 / 설정
+        // ==========================================
+        const BASE_MAX_TIME = 60; // 테스트용 60초 (배포 시 100*60으로 복원)
+        // 오디오는 두 축으로 분리: info (none/on) × asmr (none/basic/hell) = 6개 조합
+        // 채점은 round (default/0회/1회) × subject (확률과통계/미적분/기하)
+        let timerConfig = {
+            mode: 'vanilla', info: 'none', asmr: 'none',
+            display: 'digital', speed: 1,
+            round: 'default', subject: '확률과통계'
+        };
+        function getMaxTime() { return Math.max(1, Math.floor(BASE_MAX_TIME / timerConfig.speed)); }
+
+        let timerInterval = null;
+        let isRunning = false;
+        let startTime = null;
+        let pausedElapsed = 0;
+        let timerEnded = false;
+        let lastTickSec = -1; // 마지막 카운트다운 pop 표시한 '남은 초'
+
+        // 문항별 lap 상태
+        let questionLaps = {};
+        let activeQuestion = null;
+        let activeQuestionStart = null;
+
+        // 일반 lap 상태 — 단계별 기록 (최대 4회)
+        const MAX_LAP_RECORDS = 4;
+        const LAP_RECORD_LABELS = ['1회독 단계', '2회독 단계', '검토/마무리', '풀이 종료'];
+        let simpleLaps = []; // [{ at, dur }]
+
+        // 정답 상태
+        let questionAnswers = {}; // { '1': '3', '12': '주관식답', ... }
+        let questionOmr = {};     // 주관식 자리 상태 { '20': {h:'', t:'3', o:'5'}, ... } (표시 보존용)
+
+        let currentScreen = 'main';
+        const VALID_SCREENS = new Set(['main', 'image', 'timer', 'settings']);
+
+        function resolveScreen(rawHash) {
+            const h = (rawHash || '').replace(/^#/, '').toLowerCase();
+            return VALID_SCREENS.has(h) ? h : 'main';
+        }
+
+        function renderScreen(screen) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(screen + '-screen');
+            if (target) target.classList.add('active');
+
+            // 타이머 화면에서 다른 곳으로 이동 시 자동 리셋
+            if (currentScreen === 'timer' && screen !== 'timer') {
+                resetTimer();
+            }
+            currentScreen = screen;
+
+            // 넓은 화면 2단 레이아웃은 '타이머 화면 + 문항별 기록' 일 때만
+            document.body.classList.toggle('tl-grid', screen === 'timer' && timerConfig.mode === 'grid');
+
+            setZoomEnabled(screen === 'image');
+            updateBottomNav(screen);
+            window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+            animateScreenIn(screen);
+        }
+
+        function navTo(screen) {
+            const s = VALID_SCREENS.has(screen) ? screen : 'main';
+            const targetHash = s === 'main' ? '' : '#' + s;
+            if (window.location.hash === targetHash || (s === 'main' && !window.location.hash)) {
+                renderScreen(s);
+            } else {
+                window.location.hash = targetHash;
+            }
+        }
+
+        function showScreen(screen) { navTo(screen); }
+
+        function updateBottomNav(screen) {
+            // 타이머 관련(settings/timer)은 모두 '타이머' 탭 강조
+            const navKey = (screen === 'timer' || screen === 'settings') ? 'settings' : screen;
+            document.querySelectorAll('.bottom-nav__item').forEach(el => {
+                el.classList.toggle('active', el.dataset.nav === navKey);
+            });
+        }
+
+        function goBackToMain() { navTo('main'); }
+
+        // ==========================================
+        // 설정 적용 후 타이머 시작
+        // ==========================================
+        function applySettingsAndStart() {
+            const form = document.getElementById('timer-settings-form');
+            const roundEl = form.querySelector('input[name="round"]:checked');
+            const subjectEl = form.querySelector('input[name="subject"]:checked');
+            timerConfig = {
+                mode: form.querySelector('input[name="mode"]:checked').value,
+                info: form.querySelector('input[name="info"]:checked').value,
+                asmr: form.querySelector('input[name="asmr"]:checked').value,
+                display: form.querySelector('input[name="display"]:checked').value,
+                speed: parseFloat(form.querySelector('input[name="speed"]:checked').value),
+                round: roundEl ? roundEl.value : 'default',
+                subject: subjectEl ? subjectEl.value : '확률과통계'
+            };
+
+            // 모드별 컨테이너 표시/숨김
+            document.getElementById('lap-record-container').style.display = (timerConfig.mode === 'lap') ? 'block' : 'none';
+            document.getElementById('question-grid-section').style.display = (timerConfig.mode === 'grid') ? 'block' : 'none';
+
+            // 디스플레이 옵션 (디지털 / 아날로그)
+            const tc = document.getElementById('timer-container');
+            tc.classList.remove('mode-digital', 'mode-analog');
+            tc.classList.add('mode-' + timerConfig.display);
+            document.getElementById('timer-display').style.fontFamily = "var(--font-mono)";
+
+            // 오디오 옵션 — 시험 안내방송 ON일 때 파일 프리로드
+            if (timerConfig.info === 'on') setupAudioFiles();
+            // ASMR/HELL은 별도 엔진 (준비 중)
+
+            // 타이머 제목 / 힌트 갱신
+            const minutes = Math.floor(getMaxTime() / 60);
+            document.getElementById('timer-title').textContent = '⏱️ ' + minutes + '분 타이머';
+            const hint = document.getElementById('timer-hint');
+            if (timerConfig.mode === 'vanilla') {
+                hint.textContent = '💡 오직 남은 시간과 자신에게만 집중하세요.';
+            } else if (timerConfig.mode === 'lap') {
+                hint.textContent = '💡 [시작] 후, [기록(Lap)] 버튼을 눌러 구간 시간을 기록할 수 있습니다.';
+            } else {
+                hint.textContent = '💡 [시작] 후, 문항 번호를 누르면 해당 문항 풀이가 시작됩니다. (꾹 누르면 회차별 상세)';
+            }
+
+            resetTimer();
+            showScreen('timer');
+        }
+
+        // ==========================================
+        // 타이머 시간 처리
+        // ==========================================
+        function formatTime(seconds) {
+            const s = Math.max(0, Math.floor(seconds));
+            const mins = Math.floor(s / 60);
+            const secs = s % 60;
+            return mins.toString().padStart(2, '0') + ':' + secs.toString().padStart(2, '0');
+        }
+
+        function getElapsedTime() {
+            if (!isRunning || !startTime) return pausedElapsed;
+            const now = Date.now();
+            const elapsed = pausedElapsed + Math.floor((now - startTime) / 1000);
+            return Math.min(elapsed, getMaxTime());
+        }
+
+        function updateDisplay() {
+            const elapsed = getElapsedTime();
+            const display = document.getElementById('timer-display');
+            display.textContent = formatTime(elapsed);
+            // 막판 10초: 남은 초가 바뀔 때마다 숫자 pop
+            const remaining = Math.max(0, getMaxTime() - elapsed);
+            if (isRunning && remaining <= 10 && remaining !== lastTickSec) {
+                lastTickSec = remaining;
+                display.classList.remove('tick-pop');
+                void display.offsetWidth;
+                display.classList.add('tick-pop');
+            } else if (remaining > 10) {
+                lastTickSec = -1;
+            }
+            updateTimerColor(elapsed);
+            updateAnalogClock(elapsed);
+            updatePaceTrack(elapsed);
+            checkAudioCues(elapsed);
+            if (timerConfig.mode === 'grid') {
+                renderQuestionCells();
+                // 독의 진행시간만 가볍게 갱신 (전체 재렌더 X)
+                const dockTime = document.getElementById('dock-time');
+                if (dockTime && activeQuestion && activeQuestionStart != null) {
+                    dockTime.textContent = '⏱ ' + formatTime(Math.max(0, getElapsedTime() - activeQuestionStart));
+                }
+            }
+
+            const max = getMaxTime();
+            if (elapsed >= max && isRunning && !timerEnded) {
+                timerEnded = true;
+                clearInterval(timerInterval);
+                pausedElapsed = max;
+                isRunning = false;
+                if (timerConfig.mode === 'grid') {
+                    commitActiveLap();
+                    activeQuestion = null;
+                    activeQuestionStart = null;
+                    renderQuestionCells();
+                    updateAnswerDock();
+                    // 넓은 화면 2단 → 완주 후엔 단일 단으로 접어 빈 박스 제거
+                    document.body.classList.add('race-finished');
+                    showInlineResults();
+                }
+                const btn = document.getElementById('start-btn');
+                btn.textContent = '▶ 시작';
+                btn.className = 'btn btn-start';
+                const container = document.getElementById('timer-container');
+                if (container) container.classList.remove('running');
+                document.body.classList.remove('race-running');
+            }
+        }
+
+        // 마일스톤 플래시 트리거용 — 직전 색 상태 추적
+        let lastTimerState = 'normal';
+        function flashMilestone(container) {
+            container.classList.remove('milestone-flash');
+            // reflow 강제 → 같은 클래스 재부여 시 애니 재실행
+            void container.offsetWidth;
+            container.classList.add('milestone-flash');
+            setTimeout(() => container.classList.remove('milestone-flash'), 750);
+        }
+
+        function updateTimerColor(elapsed) {
+            const container = document.getElementById('timer-container');
+            if (!container) return;
+            const max = getMaxTime();
+            const ratio = max > 0 ? elapsed / max : 0;
+            container.classList.remove('theme-yellow', 'theme-red');
+            let state = 'normal';
+            if (ratio >= 0.95) state = 'red';
+            else if (ratio >= 0.5) state = 'yellow';
+            if (state === 'red') container.classList.add('theme-red');
+            else if (state === 'yellow') container.classList.add('theme-yellow');
+            container.classList.toggle('urgent', state === 'red');
+            // 구간(50%/95%)에 새로 진입하는 순간 1회 플래시 (달리는 중에만)
+            if (state !== lastTimerState && state !== 'normal' && isRunning) {
+                flashMilestone(container);
+            }
+            lastTimerState = state;
+        }
+
+        // ==========================================
+        // 페이스메이커 트랙 — 나(🏃) vs 권장 페이스(🐇)
+        //  · grid 모드: 러너=실제 푼 문항 진행률, 페이서=경과시간 기준 권장 진행률 → 비교 코칭
+        //  · vanilla/lap 모드: 단순 경과 진행바 (페이서 숨김)
+        // ==========================================
+        function updatePaceTrack(elapsed) {
+            const track = document.getElementById('pace-track');
+            if (!track) return;
+            const fill = document.getElementById('pace-fill');
+            const runner = document.getElementById('pace-runner');
+            const pacer = document.getElementById('pace-pacer');
+            const feedback = document.getElementById('pace-feedback');
+            const max = getMaxTime();
+            const timeRatio = max > 0 ? Math.min(1, Math.max(0, elapsed / max)) : 0;
+            const clampPos = (p) => Math.max(4, Math.min(96, p));
+            const atStart = (!isRunning && elapsed === 0);
+            feedback.classList.remove('ahead', 'behind');
+
+            if (timerConfig.mode === 'grid') {
+                pacer.style.display = '';
+                const TOTAL_Q = 30;
+                const answered = Object.keys(questionAnswers).length;
+                const progressRatio = Math.min(1, answered / TOTAL_Q);
+                runner.style.left = clampPos(progressRatio * 100) + '%';
+                pacer.style.left = clampPos(timeRatio * 100) + '%';
+                fill.style.width = (progressRatio * 100) + '%';
+
+                const expectedQ = Math.round(timeRatio * TOTAL_Q);
+                const diff = answered - expectedQ;
+                if (atStart) {
+                    feedback.textContent = '출발 대기 중';
+                } else if (timeRatio >= 1) {
+                    feedback.textContent = '🏁 완주! 정답 ' + answered + '/30';
+                } else if (diff >= 1) {
+                    feedback.textContent = '🐇보다 ' + diff + '문항 앞서요';
+                    feedback.classList.add('ahead');
+                } else if (diff <= -1) {
+                    feedback.textContent = '🐇보다 ' + (-diff) + '문항 뒤처졌어요';
+                    feedback.classList.add('behind');
+                } else {
+                    feedback.textContent = '페이스 양호 👍';
+                }
+            } else {
+                // vanilla / lap — 페이서 없이 경과 진행바
+                pacer.style.display = 'none';
+                runner.style.left = clampPos(timeRatio * 100) + '%';
+                fill.style.width = (timeRatio * 100) + '%';
+                if (atStart) {
+                    feedback.textContent = '출발 대기 중';
+                } else if (timeRatio >= 1) {
+                    feedback.textContent = '🏁 완주!';
+                } else {
+                    feedback.textContent = '남은 거리 ' + formatTime(Math.max(0, max - elapsed));
+                }
+            }
+        }
+
+        // ==========================================
+        // 아날로그 시계 (10:30 → 12:10, 100분 매핑)
+        // ==========================================
+        // SVG 12시간 마커 한 번만 생성
+        // 수능 시계식 60개 분 점 마커 (5분 단위는 더 크고 진하게)
+        function initAnalogMarkers() {
+            const g = document.getElementById('ac-markers');
+            if (!g) return;
+            g.innerHTML = '';
+            const ns = 'http://www.w3.org/2000/svg';
+            const r = 78;
+            for (let i = 0; i < 60; i++) {
+                const angle = (i * 6) * Math.PI / 180;
+                const cx = 100 + Math.sin(angle) * r;
+                const cy = 100 - Math.cos(angle) * r;
+                const isMajor = i % 5 === 0;
+                const dot = document.createElementNS(ns, 'circle');
+                dot.setAttribute('cx', cx.toFixed(2));
+                dot.setAttribute('cy', cy.toFixed(2));
+                dot.setAttribute('r', isMajor ? '1.9' : '1.0');
+                if (isMajor) dot.setAttribute('class', 'major');
+                g.appendChild(dot);
+            }
+        }
+
+        // 경과 시간(초)을 시침/분침 회전각으로 매핑
+        // - 시작(0초) = 10:30 (시침 315°, 분침 180°)
+        // - 끝(maxTime) = 12:10 (시침 365°/누적, 분침 780°/누적)
+        // - 누적각 사용으로 자정 통과 시 역회전 방지, CSS transition으로 부드럽게
+        function updateAnalogClock(elapsed) {
+            const hourEl = document.getElementById('ac-hour');
+            const minuteEl = document.getElementById('ac-minute');
+            const secondEl = document.getElementById('ac-second');
+            const readoutEl = document.getElementById('analog-readout');
+            if (!hourEl || !minuteEl) return;
+            const max = getMaxTime();
+            const ratio = max > 0 ? Math.min(1, Math.max(0, elapsed / max)) : 0;
+            const examMin = ratio * 100; // 0~100
+            const minuteAngle = 180 + examMin * 6;       // 누적각
+            const hourAngle = 315 + examMin * 0.5;       // 누적각
+            hourEl.style.transform = 'rotate(' + hourAngle.toFixed(2) + 'deg)';
+            minuteEl.style.transform = 'rotate(' + minuteAngle.toFixed(2) + 'deg)';
+
+            // 시:분:초 계산 (시침/초침/읽기보조 공용)
+            const totalMin = 10 * 60 + 30 + examMin; // 분 단위 (실수 가능)
+            const h = Math.floor(totalMin / 60);
+            const m = Math.floor(totalMin % 60);
+            const s = Math.floor((totalMin - Math.floor(totalMin)) * 60);
+
+            // 초침 — 누적각(examMin*360)으로 1분에 한 바퀴, 분 경계서 역회전 방지
+            if (secondEl) {
+                secondEl.style.transform = 'rotate(' + (examMin * 360).toFixed(2) + 'deg)';
+            }
+
+            // 읽기 보조 텍스트 (현재 표시 시각)
+            if (readoutEl) {
+                readoutEl.textContent =
+                    String(h).padStart(2, '0') + ':' +
+                    String(m).padStart(2, '0') + ':' +
+                    String(s).padStart(2, '0');
+            }
+        }
+
+        // ==========================================
+        // 오디오 시스템 (시험 안내방송)
+        // ==========================================
+        // 파일은 test_timer4.html과 같은 디렉터리에 위치 (./001.mp3 등)
+        // 큐 시점은 timer-elapsed 초 기준:
+        //   - 001.mp3: 1초
+        //   - 002.mp3: 001.mp3 종료 직후 (chained on 'ended')
+        //   - 003.mp3: 12초
+        //   - 004.mp3: 22초
+        // (현재 BASE_MAX_TIME = 30 테스트 환경 기준. 배포 시 큐 시점도 함께 조정 필요.)
+        const INFO_AUDIO_FILES = ['001.mp3', '002.mp3', '003.mp3', '004.mp3'];
+        const audioElements = {};
+        let firedCues = new Set();
+
+        function setupAudioFiles() {
+            INFO_AUDIO_FILES.forEach(src => {
+                if (audioElements[src]) return;
+                const a = new Audio(src);
+                a.preload = 'auto';
+                a.addEventListener('error', () => {
+                    console.warn('[audio] 로드 실패 — 같은 디렉터리에 ' + src + ' 파일이 있어야 합니다.');
+                });
+                audioElements[src] = a;
+            });
+        }
+
+        function playAudioCue(src) {
+            const a = audioElements[src];
+            if (!a) return;
+            try {
+                a.currentTime = 0;
+                const p = a.play();
+                if (p && p.catch) p.catch(err => console.warn('[audio] 재생 실패:', src, err && err.message));
+            } catch (e) {
+                console.warn('[audio] 재생 예외:', src, e);
+            }
+        }
+
+        function checkAudioCues(elapsed) {
+            if (timerConfig.info !== 'on' || !isRunning) return;
+            // 1초 — 001.mp3 시작, 종료 직후 002.mp3
+            if (!firedCues.has('001') && elapsed >= 1) {
+                firedCues.add('001');
+                playAudioCue('001.mp3');
+                const a = audioElements['001.mp3'];
+                if (a) {
+                    a.onended = () => {
+                        if (!firedCues.has('002')) {
+                            firedCues.add('002');
+                            playAudioCue('002.mp3');
+                        }
+                    };
+                }
+            }
+            // 12초 — 003.mp3
+            if (!firedCues.has('003') && elapsed >= 12) {
+                firedCues.add('003');
+                playAudioCue('003.mp3');
+            }
+            // 22초 — 004.mp3
+            if (!firedCues.has('004') && elapsed >= 22) {
+                firedCues.add('004');
+                playAudioCue('004.mp3');
+            }
+        }
+
+        function pauseAllAudio() {
+            Object.values(audioElements).forEach(a => {
+                if (!a.paused && !a.ended) {
+                    a.dataset.wasPlaying = '1';
+                    a.pause();
+                }
+            });
+        }
+
+        function resumeAllAudio() {
+            Object.values(audioElements).forEach(a => {
+                if (a.dataset.wasPlaying === '1') {
+                    const p = a.play();
+                    if (p && p.catch) p.catch(() => {});
+                    a.dataset.wasPlaying = '';
+                }
+            });
+        }
+
+        function stopAllAudio() {
+            Object.values(audioElements).forEach(a => {
+                a.pause();
+                a.currentTime = 0;
+                if (a.dataset) delete a.dataset.wasPlaying;
+                a.onended = null;
+            });
+            firedCues = new Set();
+        }
+
+        function toggleTimer() {
+            const btn = document.getElementById('start-btn');
+            const container = document.getElementById('timer-container');
+            if (isRunning) {
+                clearInterval(timerInterval);
+                pausedElapsed = getElapsedTime();
+                startTime = null;
+                isRunning = false;
+                btn.textContent = '▶ 시작';
+                btn.className = 'btn btn-start';
+                if (container) container.classList.remove('running');
+                document.body.classList.remove('race-running');
+                pauseAllAudio();
+            } else {
+                if (getElapsedTime() < getMaxTime()) {
+                    startTime = Date.now();
+                    isRunning = true;
+                    timerEnded = false;
+                    btn.textContent = '⏸ 일시정지';
+                    btn.className = 'btn btn-pause';
+                    if (container) container.classList.add('running');
+                    document.body.classList.add('race-running');
+                    if (timerInterval) clearInterval(timerInterval);
+                    timerInterval = setInterval(updateDisplay, 500);
+                    resumeAllAudio();
+                    updateDisplay();
+                }
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            isRunning = false;
+            startTime = null;
+            pausedElapsed = 0;
+            timerEnded = false;
+
+            questionLaps = {};
+            activeQuestion = null;
+            activeQuestionStart = null;
+            simpleLaps = [];
+            questionAnswers = {};
+            questionOmr = {};
+
+            closeLapPopover();
+            closeAnswerPopover();
+            hideInlineResults();
+            renderSimpleLapList();
+            updateAnswerDock();
+            document.body.classList.remove('race-finished');
+            stopAllAudio();
+
+            const container = document.getElementById('timer-container');
+            if (container) container.classList.remove('running', 'theme-yellow', 'theme-red', 'urgent', 'milestone-flash');
+            document.body.classList.remove('race-running');
+            lastTimerState = 'normal';
+            lastTickSec = -1;
+            updateDisplay();
+            const btn = document.getElementById('start-btn');
+            btn.textContent = '▶ 시작';
+            btn.className = 'btn btn-start';
+        }
+
+        // ==========================================
+        // 일반 lap 기록 (lap 모드)
+        // ==========================================
+        function recordSimpleLap() {
+            if (simpleLaps.length >= MAX_LAP_RECORDS) {
+                alert('모든 단계가 기록되었습니다.');
+                return;
+            }
+            if (!isRunning && getElapsedTime() === 0) {
+                alert('타이머를 먼저 시작해주세요.');
+                return;
+            }
+            if (timerEnded) return;
+            const elapsed = getElapsedTime();
+            const prev = simpleLaps.length > 0 ? simpleLaps[simpleLaps.length - 1].at : 0;
+            const dur = Math.max(0, elapsed - prev);
+            simpleLaps.push({ at: elapsed, dur: dur });
+
+            renderSimpleLapList();
+        }
+
+        function renderSimpleLapList() {
+            const list = document.getElementById('simple-lap-list');
+            const countEl = document.getElementById('record-count');
+            const recordBtn = document.getElementById('lap-record-btn');
+            if (!list) return;
+
+            if (simpleLaps.length === 0) {
+                list.innerHTML = '<div class="timestamp-item empty">기록 없음</div>';
+            } else {
+                list.innerHTML = simpleLaps.map((lap, i) => {
+                    const label = LAP_RECORD_LABELS[i] || ((i + 1) + '회차');
+                    return '<div class="timestamp-item">' +
+                        '<span class="timestamp-number">' + label + '</span>' +
+                        '<span class="timestamp-time">' + formatTime(lap.at) + '</span>' +
+                        '</div>';
+                }).join('');
+            }
+            const remaining = MAX_LAP_RECORDS - simpleLaps.length;
+            if (countEl) countEl.textContent = '남은 기록 횟수: ' + remaining + '회';
+            if (recordBtn) recordBtn.disabled = remaining === 0;
+        }
+
+        // ==========================================
+        // 문항별 lap (grid 모드)
+        //  · 그리드 셀 = 개별 문항(타이머는 문항별)
+        //  · 답안 독은 '묶음(ANSWER_GROUPS)' 단위로 표시 — 묶음 내 아무 문항이나 누르면 묶음 전체가 뜸
+        // ==========================================
+        function makeCells(nums) {
+            return nums.map(function (n) {
+                return { id: String(n), label: String(n), members: [n] };
+            });
+        }
+        const COMMON_CELLS = makeCells([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]);
+        const SELECT_CELLS = makeCells([23, 24, 25, 26, 27, 28, 29, 30]);
+        const CELL_BY_ID = {};
+        [].concat(COMMON_CELLS, SELECT_CELLS).forEach(c => { CELL_BY_ID[c.id] = c; });
+
+        // 답안 독에서 함께 표시되는 문항 묶음
+        const ANSWER_GROUPS = [
+            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], // 공통 객관식 — 한 패널에 모두 표시
+            [16, 17], [18, 19], [20], [21, 22],
+            [23, 24, 25, 26, 27, 28], [29, 30]
+        ];
+        const GROUP_OF = {}; // 문항번호 → 같은 묶음의 문항 배열
+        ANSWER_GROUPS.forEach(function (g) { g.forEach(function (q) { GROUP_OF[String(q)] = g; }); });
+
+        let longPressTimer = null;
+        let longPressTriggered = false;
+
+        function initQuestionGrid() {
+            const commonEl = document.getElementById('grid-common');
+            const selectEl = document.getElementById('grid-select');
+            if (!commonEl || !selectEl) return;
+            commonEl.innerHTML = '';
+            selectEl.innerHTML = '';
+            COMMON_CELLS.forEach(c => commonEl.appendChild(makeQuestionCell(c)));
+            SELECT_CELLS.forEach(c => selectEl.appendChild(makeQuestionCell(c)));
+            renderQuestionCells();
+        }
+
+        function makeQuestionCell(cell) {
+            const el = document.createElement('button');
+            el.type = 'button';
+            el.className = 'question-cell';
+            el.dataset.cellId = cell.id;
+            el.innerHTML = '<span class="badge" data-badge></span><span class="num">' + cell.label + '</span><span class="time" data-time></span>';
+
+            const clearLongPress = () => {
+                if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+            };
+            el.addEventListener('pointerdown', () => {
+                longPressTriggered = false;
+                clearLongPress();
+                longPressTimer = setTimeout(() => {
+                    longPressTriggered = true;
+                    showLapPopover(cell.id);
+                }, 500);
+            });
+            el.addEventListener('pointerup', () => {
+                clearLongPress();
+                if (longPressTriggered) { longPressTriggered = false; return; }
+                // 탭 = 그 문항으로 이동(타이밍)만. 정답은 아래 고정 독에서 입력.
+                toggleQuestion(cell.id);
+            });
+            el.addEventListener('pointerleave', clearLongPress);
+            el.addEventListener('pointercancel', clearLongPress);
+            el.addEventListener('contextmenu', (e) => e.preventDefault());
+            return el;
+        }
+
+        function toggleQuestion(cellId) {
+            if (!isRunning && getElapsedTime() === 0) {
+                alert('타이머를 먼저 시작해주세요.');
+                return false;
+            }
+            if (timerEnded) return false;
+            if (activeQuestion === cellId) {
+                commitActiveLap();
+                activeQuestion = null;
+                activeQuestionStart = null;
+            } else {
+                commitActiveLap();
+                activeQuestion = cellId;
+                activeQuestionStart = getElapsedTime();
+            }
+            renderQuestionCells();
+            updateAnswerDock();
+            return true;
+        }
+
+        function commitActiveLap() {
+            if (activeQuestion == null || activeQuestionStart == null) return;
+            const end = getElapsedTime();
+            const dur = end - activeQuestionStart;
+            if (dur <= 0) return;
+            if (!questionLaps[activeQuestion]) questionLaps[activeQuestion] = [];
+            questionLaps[activeQuestion].push({ start: activeQuestionStart, end: end, dur: dur });
+
+        }
+
+        // 객관식 정답을 '선택'하면 그 문항 풀이를 끝낸 것으로 보고
+        // 현재 lap을 확정한 뒤 다음 번호로 타이밍을 자동 승계한다.
+        //  · 의도: 학생이 매번 다음 문항 번호를 누르지 않고, 풀고-답 누르고-풀고-답 누르는 흐름도 지원.
+        //  · 주관식(OMR)은 입력이 자리수 단위라 자동 이동하지 않음 — 객관식에서만 호출.
+        function advanceToNext(fromId) {
+            const cur = parseInt(fromId, 10);
+            if (isNaN(cur)) return false;
+            commitActiveLap();
+            const next = cur + 1;
+            if (next <= 30) {
+                activeQuestion = String(next);
+                activeQuestionStart = getElapsedTime();
+            } else {
+                // 마지막 문항이면 타이밍 종료
+                activeQuestion = null;
+                activeQuestionStart = null;
+            }
+            return true;
+        }
+
+        // 자동 이동 후 현재 문항 입력칸이 화면에 보이도록 스크롤
+        function scrollDockCurrentIntoView() {
+            const dock = document.getElementById('answer-dock');
+            if (!dock) return;
+            const cur = dock.querySelector('.dock-member.is-current');
+            if (cur && cur.scrollIntoView) cur.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function getQuestionTotal(cellId) {
+            const laps = questionLaps[cellId] || [];
+            let total = laps.reduce((a, b) => a + b.dur, 0);
+            if (activeQuestion === cellId && activeQuestionStart != null) {
+                total += Math.max(0, getElapsedTime() - activeQuestionStart);
+            }
+            return total;
+        }
+
+        function getQuestionVisitCount(cellId) {
+            const count = (questionLaps[cellId] || []).length;
+            return activeQuestion === cellId ? count + 1 : count;
+        }
+
+        function renderQuestionCells() {
+            document.querySelectorAll('.question-cell').forEach(cell => {
+                const id = cell.dataset.cellId;
+                const total = getQuestionTotal(id);
+                const visits = getQuestionVisitCount(id);
+                const isActive = activeQuestion === id;
+                const timeEl = cell.querySelector('[data-time]');
+                const badgeEl = cell.querySelector('[data-badge]');
+                if (timeEl) timeEl.textContent = total > 0 ? formatTime(total) : '';
+                cell.classList.toggle('has-time', total > 0);
+                if (badgeEl) badgeEl.textContent = visits > 1 ? '×' + visits : '';
+                cell.classList.toggle('active', isActive);
+                const cellDef = CELL_BY_ID[id];
+                const members = cellDef ? cellDef.members : [id];
+                const allAns = members.every(function (m) { const a = questionAnswers[String(m)]; return a != null && a !== ''; });
+                cell.classList.toggle('answered', allAns);
+            });
+            const section = document.getElementById('question-grid-section');
+            if (section) section.classList.toggle('disabled', timerEnded);
+        }
+
+        function showLapPopover(cellId) {
+            closeLapPopover();
+            const laps = questionLaps[cellId] || [];
+            const isActive = activeQuestion === cellId;
+            const total = getQuestionTotal(cellId);
+            const label = (CELL_BY_ID[cellId] && CELL_BY_ID[cellId].label) || cellId;
+
+            const backdrop = document.createElement('div');
+            backdrop.className = 'lap-popover-backdrop';
+            backdrop.id = 'lap-popover-backdrop';
+            backdrop.addEventListener('click', (e) => {
+                if (e.target === backdrop) closeLapPopover();
+            });
+
+            let rowsHtml = '';
+            laps.forEach((lap, idx) => {
+                rowsHtml += '<div class="lap-row"><span class="label">' + (idx + 1) + '회차</span><span class="value">' + formatTime(lap.dur) + '</span></div>';
+            });
+            if (isActive && activeQuestionStart != null) {
+                const liveDur = Math.max(0, getElapsedTime() - activeQuestionStart);
+                rowsHtml += '<div class="lap-row active"><span class="label">' + (laps.length + 1) + '회차 (진행 중)</span><span class="value">' + formatTime(liveDur) + '</span></div>';
+            }
+            if (!rowsHtml) {
+                rowsHtml = '<div class="lap-row"><span class="label">기록 없음</span><span class="value">—</span></div>';
+            }
+
+            backdrop.innerHTML = '<div class="lap-popover">' +
+                '<div class="lap-popover-title">' + label + '번 기록</div>' +
+                rowsHtml +
+                '<div class="lap-row total"><span class="label">합계</span><span class="value">' + formatTime(total) + '</span></div>' +
+                '<button class="lap-popover-close" type="button">닫기</button>' +
+                '</div>';
+            document.body.appendChild(backdrop);
+            backdrop.querySelector('.lap-popover-close').addEventListener('click', closeLapPopover);
+        }
+
+        function closeLapPopover() {
+            const el = document.getElementById('lap-popover-backdrop');
+            if (el) el.remove();
+        }
+
+        // ==========================================
+        // 고정 답안 독 (인라인 정답 입력 — 모달 대체)
+        //  · 객관식: ①~⑤ 칩
+        //  · 주관식: 백/십/일 OMR picker (앞자리 비우면 한/두 자리 수)
+        // ==========================================
+        // 백/십/일 자리 상태(questionOmr[q])를 정답 문자열로 변환.
+        // 누른 자리만 순서대로 이어붙임 — 빈 자리는 0으로 채우지 않음(OMR 강제 X).
+        // 예) 일=7 → "7", 백=0·십=1·일=2 → "012"→12, 백=3·십=5·일=9 → 359, 백=3만 → 3
+        function omrValue(st) {
+            const concat = (st.h || '') + (st.t || '') + (st.o || '');
+            if (concat === '') return '';
+            const n = parseInt(concat, 10);
+            if (isNaN(n) || n < 1) return '';
+            return String(Math.min(999, n));
+        }
+
+        // 한 문항(member)의 입력 UI(html) 생성
+        function dockMemberHtml(qn, isCurrent) {
+            const q = String(qn);
+            const type = getQuestionType(q);
+            const cur = questionAnswers[q] || '';
+            let inner = '';
+            if (type === 'mc') {
+                let chips = '';
+                for (let v = 1; v <= 5; v++) {
+                    const sel = String(cur) === String(v) ? ' selected' : '';
+                    chips += '<button type="button" class="dock-chip' + sel + '" data-q="' + q + '" data-mc="' + v + '">' + v + '</button>';
+                }
+                inner = '<div class="dock-chips">' + chips + '</div>';
+            } else {
+                const st = questionOmr[q] || { h: '', t: '', o: '' };
+                let rowsHtml = '';
+                [['h', '백'], ['t', '십'], ['o', '일']].forEach(function (pl) {
+                    let cells = '';
+                    for (let d = 0; d <= 9; d++) {
+                        const sel = st[pl[0]] === String(d) ? ' selected' : '';
+                        cells += '<button type="button" class="dock-digit' + sel + '" data-q="' + q + '" data-place="' + pl[0] + '" data-digit="' + d + '">' + d + '</button>';
+                    }
+                    rowsHtml += '<div class="dock-omr-group"><span class="dock-omr-label">' + pl[1] + '</span><div class="dock-omr-digits">' + cells + '</div></div>';
+                });
+                inner = '<div class="dock-omr">' + rowsHtml + '</div>';
+            }
+            return '<div class="dock-member' + (isCurrent ? ' is-current' : '') + '">' +
+                '<span class="dock-member-label">' + qn + '번</span>' +
+                '<div class="dock-member-body">' + inner + '</div></div>';
+        }
+
+        function updateAnswerDock() {
+            const dock = document.getElementById('answer-dock');
+            if (!dock) return;
+            if (timerConfig.mode !== 'grid' || timerEnded) { dock.style.display = 'none'; return; }
+            dock.style.display = 'block';
+
+            const q = activeQuestion; // 개별 문항 id (예: "7")
+            if (!q) {
+                dock.innerHTML = '<div class="dock-hint">문항을 누르면 그 문제 풀이가 시작돼요.<br>답은 시험 중 부담되면 비워두고, 여기서 원할 때만 기록하세요.</div>';
+                return;
+            }
+
+            // 활성 문항이 속한 묶음 전체를 함께 표시
+            const group = GROUP_OF[String(q)] || [parseInt(q, 10)];
+            const groupLabel = group.length > 1 ? (group[0] + '~' + group[group.length - 1]) : String(group[0]);
+            const isNumericGroup = getQuestionType(group[0]) === 'numeric';
+            const liveDur = (activeQuestionStart != null) ? formatTime(Math.max(0, getElapsedTime() - activeQuestionStart)) : '00:00';
+
+            dock.innerHTML =
+                '<div class="dock-head"><span class="dock-q">현재 풀이 <b>' + q + '번</b>' +
+                (group.length > 1 ? ' <span class="dock-group">묶음 ' + groupLabel + '</span>' : '') + '</span>' +
+                '<span class="dock-time" id="dock-time">⏱ ' + liveDur + '</span></div>' +
+                '<div class="dock-members' + (isNumericGroup ? ' is-numeric' : '') + '">' +
+                group.map(function (m) { return dockMemberHtml(m, String(m) === String(q)); }).join('') +
+                '</div>';
+
+            // 핸들러 (그룹이면 문항마다 data-q로 구분)
+            dock.querySelectorAll('.dock-chip').forEach(function (c) {
+                c.addEventListener('click', function () {
+                    const cq = c.dataset.q, v = c.dataset.mc;
+                    const same = String(questionAnswers[cq] || '') === String(v);
+                    const newVal = same ? null : v;
+                    setAnswer(cq, newVal);
+                    // 객관식 정답을 '선택'(해제 아님)했고, 그 문항이 현재 타이밍 중이면 다음 문항으로 자동 이동
+                    const advanced = (newVal != null && String(cq) === String(activeQuestion)) ? advanceToNext(cq) : false;
+                    updateAnswerDock();
+                    renderQuestionCells();
+                    if (advanced) scrollDockCurrentIntoView();
+                });
+            });
+            dock.querySelectorAll('.dock-digit').forEach(function (b) {
+                b.addEventListener('click', function () {
+                    const q = b.dataset.q;
+                    const st = questionOmr[q] || { h: '', t: '', o: '' };
+                    const place = b.dataset.place, d = b.dataset.digit;
+                    st[place] = (st[place] === d) ? '' : d; // 같은 숫자 재탭 → 해제 (다른 자리는 그대로)
+                    questionOmr[q] = st;
+                    setAnswer(q, omrValue(st) || null);
+                    updateAnswerDock();
+                    renderQuestionCells();
+                });
+            });
+        }
+
+        // ==========================================
+        // 정답 입력 팝오버 (레거시 — 현재 미사용, 호환용 유지)
+        // ==========================================
+        // 수능 수학 문항 유형:
+        //  - 객관식 5지선다: 1~15, 23~28
+        //  - 주관식 (1~999 입력): 16~22, 29~30
+        function getQuestionType(qNum) {
+            const n = parseInt(qNum, 10);
+            if (n >= 16 && n <= 22) return 'numeric';
+            if (n === 29 || n === 30) return 'numeric';
+            return 'mc';
+        }
+
+        function showAnswerPopover(qNum) {
+            closeAnswerPopover();
+            closeLapPopover();
+            const qType = getQuestionType(qNum);
+            const currentVal = questionAnswers[String(qNum)] || '';
+
+            const backdrop = document.createElement('div');
+            backdrop.className = 'lap-popover-backdrop';
+            backdrop.id = 'answer-popover-backdrop';
+            backdrop.addEventListener('click', (e) => {
+                if (e.target === backdrop) closeAnswerPopover();
+            });
+
+            let bodyHtml = '';
+            if (qType === 'mc') {
+                let chips = '';
+                for (let v = 1; v <= 5; v++) {
+                    const sel = String(currentVal) === String(v) ? ' selected' : '';
+                    chips += '<button type="button" class="ans-popover-chip' + sel + '" data-val="' + v + '">' + v + '</button>';
+                }
+                bodyHtml = '<div class="ans-popover-chips">' + chips + '</div>';
+            } else {
+                const numericVal = (/^\d+$/.test(currentVal) && parseInt(currentVal, 10) >= 1 && parseInt(currentVal, 10) <= 999) ? currentVal : '';
+                bodyHtml = '<input type="number" class="ans-popover-text" id="ans-popover-input" min="1" max="999" inputmode="numeric" value="' + numericVal + '">';
+            }
+
+            backdrop.innerHTML = '<div class="lap-popover answer-popover">' +
+                '<div class="lap-popover-title">' + qNum + '번 정답 입력</div>' +
+                bodyHtml +
+                '<div class="ans-popover-actions">' +
+                '<button type="button" class="ans-popover-clear">지우기</button>' +
+                '<button type="button" class="ans-popover-close">완료</button>' +
+                '</div>' +
+                '</div>';
+            document.body.appendChild(backdrop);
+
+            const popover = backdrop.querySelector('.answer-popover');
+
+            if (qType === 'mc') {
+                popover.querySelectorAll('.ans-popover-chip').forEach(chip => {
+                    chip.addEventListener('click', () => {
+                        setAnswer(qNum, chip.dataset.val);
+                        closeAnswerPopover();
+                    });
+                });
+            } else {
+                const input = popover.querySelector('#ans-popover-input');
+                input.addEventListener('input', (e) => {
+                    let v = e.target.value.replace(/[^\d]/g, '');
+                    if (v === '') {
+                        setAnswer(qNum, null);
+                        e.target.value = '';
+                        return;
+                    }
+                    let n = parseInt(v, 10);
+                    if (n < 1) n = 1;
+                    if (n > 999) n = 999;
+                    e.target.value = String(n);
+                    setAnswer(qNum, String(n));
+                });
+                // 자동 포커스 — 모바일 환경에서 키보드가 자동으로 올라옴
+                setTimeout(() => { try { input.focus(); input.select(); } catch (e) {} }, 60);
+            }
+
+            popover.querySelector('.ans-popover-clear').addEventListener('click', () => {
+                setAnswer(qNum, null);
+                if (qType === 'mc') {
+                    popover.querySelectorAll('.ans-popover-chip').forEach(c => c.classList.remove('selected'));
+                } else {
+                    const input = popover.querySelector('#ans-popover-input');
+                    if (input) input.value = '';
+                }
+            });
+            popover.querySelector('.ans-popover-close').addEventListener('click', closeAnswerPopover);
+        }
+
+        function closeAnswerPopover() {
+            const el = document.getElementById('answer-popover-backdrop');
+            if (el) el.remove();
+        }
+
+        // ==========================================
+        // 정답 상태 관리 (questionAnswers 업데이트만)
+        // ==========================================
+        function setAnswer(qNum, value) {
+            const key = String(qNum);
+            if (value == null || value === '') {
+                delete questionAnswers[key];
+            } else {
+                questionAnswers[key] = String(value);
+            }
+            // 답안 입력 즉시 페이스 트랙(러너) 반영
+            if (timerConfig.mode === 'grid') updatePaceTrack(getElapsedTime());
+        }
+
+        // ==========================================
+        // 자동 채점 — 정답 데이터 / 배점 / 채점
+        // ==========================================
+        // Final 0회: 실제 정답 미확정 → 모든 선택과목 통일된 임시 정답
+        const ANSWER_KEYS = {
+            '0회': {
+                common: [1,2,3,4,5,1,2,3,4,5,1,2,3,4,5,16,17,18,19,20,21,22], // 1~22번
+                select: {
+                    '확률과통계': [1,2,3,4,5,1,29,30], // 23~30번
+                    '미적분':     [1,2,3,4,5,1,29,30],
+                    '기하':       [1,2,3,4,5,1,29,30]
+                }
+            }
+            // '1회': null  // 추후 정답 확정되면 추가
+        };
+
+        // 30번까지의 정답 배열 반환 (1번 = index 0)
+        function getAnswerKey(round, subject) {
+            const data = ANSWER_KEYS[round];
+            if (!data) return null;
+            const select = data.select[subject];
+            if (!select) return null;
+            return data.common.concat(select);
+        }
+
+        // 수능 수학 배점:
+        //   2점: 1, 2, 23
+        //   3점: 3~8, 16~19, 24~27
+        //   4점: 9~15, 20~22, 28~30
+        function getQuestionScore(qNum) {
+            const n = parseInt(qNum, 10);
+            if (n === 1 || n === 2 || n === 23) return 2;
+            if ((n >= 3 && n <= 8) || (n >= 16 && n <= 19) || (n >= 24 && n <= 27)) return 3;
+            return 4;
+        }
+
+        // 30문항 채점 결과 — { perQuestion: [{q, user, correct, isCorrect, score}], totalScore, correctCount }
+        function gradeAnswers() {
+            const round = timerConfig.round;
+            if (!round || round === 'default') return null;
+            const key = getAnswerKey(round, timerConfig.subject);
+            if (!key) return null;
+
+            const perQuestion = [];
+            let totalScore = 0;
+            let correctCount = 0;
+            for (let q = 1; q <= 30; q++) {
+                const user = questionAnswers[String(q)];
+                const correct = key[q - 1];
+                const userStr = user == null ? '' : String(user).trim();
+                const correctStr = String(correct).trim();
+                const isCorrect = userStr !== '' && userStr === correctStr;
+                const score = isCorrect ? getQuestionScore(q) : 0;
+                if (isCorrect) {
+                    totalScore += score;
+                    correctCount++;
+                }
+                perQuestion.push({ q: q, user: userStr, correct: correctStr, isCorrect: isCorrect, score: score });
+            }
+            return { perQuestion: perQuestion, totalScore: totalScore, correctCount: correctCount };
+        }
+
+        // ==========================================
+        // 시험 종료 결과 패널 (grid 모드)
+        // ==========================================
+        function showInlineResults() {
+            const panel = document.getElementById('results-inline');
+            if (!panel) return;
+
+            let assigned = 0;
+            const buildCellHtml = (c) => {
+                const laps = questionLaps[c.id] || [];
+                const total = laps.reduce((a, b) => a + b.dur, 0);
+                assigned += total;
+                const visits = laps.length;
+                const emptyCls = visits === 0 ? ' empty' : '';
+                const badge = visits > 1 ? '<span class="badge">×' + visits + '</span>' : '';
+                let timesHtml = '';
+                if (visits === 0) {
+                    timesHtml = '<div class="result-time muted">—</div>';
+                } else if (visits === 1) {
+                    timesHtml = '<div class="result-time">' + formatTime(laps[0].dur) + '</div>';
+                } else {
+                    laps.forEach((lap, idx) => {
+                        timesHtml += '<div class="result-time"><span class="idx">' + (idx + 1) + '</span>' + formatTime(lap.dur) + '</div>';
+                    });
+                    timesHtml += '<div class="result-time sum">Σ ' + formatTime(total) + '</div>';
+                }
+                return '<div class="result-cell' + emptyCls + '">' +
+                    '<div class="result-label">' + c.label + badge + '</div>' +
+                    '<div class="result-times">' + timesHtml + '</div>' +
+                    '</div>';
+            };
+
+            const commonHtml = COMMON_CELLS.map(buildCellHtml).join('');
+            const selectHtml = SELECT_CELLS.map(buildCellHtml).join('');
+            const elapsed = getElapsedTime();
+            const idle = Math.max(0, elapsed - assigned);
+
+            // 페이스 분포 타임라인 — 출발→피니시 구간에 문항별 시간 배분 표시
+            const maxT = getMaxTime();
+            let distSegs = '';
+            COMMON_CELLS.concat(SELECT_CELLS).forEach((c, idx) => {
+                (questionLaps[c.id] || []).forEach((lap) => {
+                    const left = maxT > 0 ? (lap.start / maxT * 100) : 0;
+                    const width = maxT > 0 ? Math.max(0.6, lap.dur / maxT * 100) : 0;
+                    const altCls = (idx % 2 === 0) ? '' : ' alt';
+                    distSegs += '<div class="pace-dist__seg' + altCls + '" style="left:' + left.toFixed(2) +
+                        '%;width:' + width.toFixed(2) + '%" title="' + c.label + '번 · ' + formatTime(lap.dur) + '"></div>';
+                });
+            });
+            const paceDistHtml =
+                '<div class="results-inline-title" style="margin-top: 18px;">🏃 페이스 분포 <span class="rt-sub">시간 운용</span></div>' +
+                '<div class="pace-dist">' +
+                    '<div class="pace-dist__bar">' + distSegs + '</div>' +
+                    '<div class="pace-dist__axis"><span>출발</span><span>중간</span><span>피니시 🏁</span></div>' +
+                    '<div class="pace-dist__legend">막대 = 각 문항에 쓴 시간 · 빈 구간 = 기타 시간(이동·검토). 막대가 한쪽에 몰릴수록 페이스 편차가 큽니다.</div>' +
+                '</div>';
+
+            // 채점 결과 (시험 모드가 default가 아닐 때)
+            const grade = gradeAnswers();
+            const perfect = !!(grade && grade.totalScore >= 100);
+            let scoreHeaderHtml = '';
+            if (grade) {
+                scoreHeaderHtml =
+                    (perfect ? '<div class="perfect-banner">🎉 만점! 완벽한 레이스</div>' : '') +
+                    '<div class="score-display">' +
+                    '<span class="score-total">' + grade.totalScore + '</span>' +
+                    '<span class="score-max">/100</span>' +
+                    '<span class="score-correct">정답 ' + grade.correctCount + ' / 30 · ' +
+                    timerConfig.round + ' · ' + timerConfig.subject + '</span>' +
+                    '</div>';
+            }
+
+            // 정답 모아보기 (시험 종료 후)
+            let answerSummaryHtml = '<div class="answer-summary-grid" style="margin-bottom: 16px;">';
+            for (let q = 1; q <= 30; q++) {
+                const v = questionAnswers[String(q)];
+                const isEmpty = v == null || v === '';
+                const display = isEmpty ? '−' : String(v);
+                let cellCls = 'answer-summary-cell';
+                let markHtml = '';
+
+                if (grade) {
+                    const g = grade.perQuestion[q - 1];
+                    if (g.isCorrect) {
+                        cellCls += ' correct';
+                        markHtml = '<span class="ans-mark">✓</span>';
+                    } else if (isEmpty) {
+                        cellCls += ' empty';
+                        markHtml = '<span class="ans-mark">→' + g.correct + '</span>';
+                    } else {
+                        cellCls += ' incorrect';
+                        if (!/^[1-5]$/.test(String(v))) cellCls += ' text';
+                        markHtml = '<span class="ans-mark">→' + g.correct + '</span>';
+                    }
+                } else {
+                    if (isEmpty) cellCls += ' empty';
+                    else if (!/^[1-5]$/.test(String(v))) cellCls += ' text';
+                }
+
+                answerSummaryHtml +=
+                    '<div class="' + cellCls + '">' +
+                    '<span class="ans-num">' + q + '</span>' +
+                    '<span class="ans-val">' + display + '</span>' +
+                    markHtml +
+                    '</div>';
+            }
+            answerSummaryHtml += '</div>';
+
+            const summaryTitle = grade ? '🎯 채점 결과' : '📝 정답 모아보기';
+            panel.innerHTML =
+                '<div class="results-inline-title">🏁 완주 기록</div>' +
+                scoreHeaderHtml +
+                '<div class="results-inline-title" style="margin-top: 8px;">' + summaryTitle + '</div>' +
+                answerSummaryHtml +
+                paceDistHtml +
+                '<div class="results-inline-title" style="margin-top: 18px;">🏁 스플릿 <span class="rt-sub">문항별 소요 시간</span></div>' +
+                '<div class="grid-label" style="margin: 0 0 6px; padding: 0 2px;">공통 (1~22)</div>' +
+                '<div class="results-grid" style="grid-template-columns: repeat(5, 1fr);">' + commonHtml + '</div>' +
+                '<div class="grid-label" style="margin: 12px 0 6px; padding: 0 2px;">선택 (23~30)</div>' +
+                '<div class="results-grid">' + selectHtml + '</div>' +
+                '<div class="lap-row total"><span class="label">기타 시간 (이동·검토)</span><span class="value">' + formatTime(idle) + '</span></div>' +
+                '<div class="lap-row total"><span class="label">전체 기록</span><span class="value">' + formatTime(elapsed) + '</span></div>' +
+                '<button class="results-inline-retry" type="button" onclick="resetTimer()">🔄 다시 달리기</button>';
+            panel.style.display = 'block';
+            animateResults(panel, grade);
+            if (perfect) fireConfetti();
+            setTimeout(() => {
+                panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 50);
+        }
+
+        function hideInlineResults() {
+            const panel = document.getElementById('results-inline');
+            if (panel) {
+                panel.style.display = 'none';
+                panel.innerHTML = '';
+            }
+        }
+
+        // ==========================================
+        // 페이지 라이프사이클
+        // ==========================================
+        function handlePageResume() { if (isRunning) updateDisplay(); }
+        document.addEventListener('visibilitychange', function() { if (!document.hidden) handlePageResume(); });
+        window.addEventListener('focus', handlePageResume);
+        window.addEventListener('pageshow', handlePageResume);
+        window.addEventListener('hashchange', function() {
+            renderScreen(resolveScreen(window.location.hash));
+        });
+
+        // 설정 페이지에서 '문항별 기록' 선택 시 채점 옵션 sub-section 표시
+        function refreshGradingVisibility() {
+            const checked = document.querySelector('input[name="mode"]:checked');
+            const section = document.getElementById('grading-options');
+            if (!section || !checked) return;
+            section.style.display = checked.value === 'grid' ? 'block' : 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initQuestionGrid();
+            initAnalogMarkers();
+            updateAnalogClock(0);
+            // 모드 변경 리스너 (채점 옵션 펼침/접힘)
+            document.querySelectorAll('input[name="mode"]').forEach(input => {
+                input.addEventListener('change', refreshGradingVisibility);
+            });
+            refreshGradingVisibility();
+            setupScrollReveals();
+            renderScreen(resolveScreen(window.location.hash));
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            if (isMobile) {
+                const instaBtn = document.getElementById('sns-insta');
+                if (instaBtn) {
+                    instaBtn.removeAttribute('target');
+                    instaBtn.href = 'instagram://user?username=lhw_math';
+                }
+                const naverBtn = document.getElementById('sns-naver');
+                if (naverBtn) {
+                    naverBtn.removeAttribute('target');
+                    naverBtn.href = 'navercafe://cafe?cafeId=23380319';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
