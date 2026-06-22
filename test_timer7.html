@@ -200,6 +200,14 @@
         .btn-pause { background: #f5a524; color: #2b1a00; flex: 1; margin-bottom: 0; }
         .btn-reset { background: #ef4444; color: white; flex: 1; margin-bottom: 0; }
         .btn-record { background: var(--accent); color: var(--on-accent); width: 100%; margin-bottom: 0; padding: 14px; font-size: 16px; }
+        .btn-finish { background: transparent; color: var(--accent); border: 2px solid var(--accent); width: 100%; margin: 12px 0 0; padding: 14px; font-size: 16px; }
+        .btn-finish:hover { background: var(--accent-soft); box-shadow: none; }
+        .btn-finish.nudge { animation: finish-pulse 1.2s ease-in-out infinite; }
+        @keyframes finish-pulse { 0%, 100% { box-shadow: 0 0 0 0 var(--accent-soft); } 50% { box-shadow: 0 0 0 7px var(--accent-soft); } }
+        .confirm-actions { display: flex; gap: 8px; margin-top: 16px; }
+        .confirm-actions button { flex: 1; padding: 12px; border-radius: 9px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; border: 1px solid var(--inner-section-border); }
+        .confirm-actions .cf-cancel { background: var(--inner-item-bg); color: var(--text-secondary); }
+        .confirm-actions .cf-ok { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
         .btn-record:disabled { background: var(--inner-item-border-empty); color: var(--text-tertiary); cursor: not-allowed; transform: none; box-shadow: none; filter: none; }
         .btn-back { background: transparent; color: var(--text-secondary); border: 1px solid var(--card-border); margin-top: 20px; }
         .btn-back:hover { background: var(--inner-section-bg); box-shadow: none; }
@@ -1360,6 +1368,8 @@
                         ↺ 리셋
                     </button>
                 </div>
+                <!-- 문항별 기록 모드에서만 노출 — 시간 전 조기 종료 -->
+                <button class="btn btn-finish" id="finish-exam-btn" type="button" onclick="confirmFinish()" style="display:none;">🏁 시험 종료</button>
 
                 <!-- lap 모드 — 단계별 기록 (최대 4회, 사전 정의 라벨) -->
                 <div class="lap-record-container" id="lap-record-container">
@@ -1743,27 +1753,54 @@
 
             const max = getMaxTime();
             if (elapsed >= max && isRunning && !timerEnded) {
-                timerEnded = true;
-                clearInterval(timerInterval);
-                pausedElapsed = max;
-                isRunning = false;
-                if (timerConfig.mode === 'grid') {
-                    commitActiveLap();
-                    activeQuestion = null;
-                    activeQuestionStart = null;
-                    renderQuestionCells();
-                    updateAnswerDock();
-                    // 넓은 화면 2단 → 완주 후엔 단일 단으로 접어 빈 박스 제거
-                    document.body.classList.add('race-finished');
-                    showInlineResults();
-                }
-                const btn = document.getElementById('start-btn');
-                btn.textContent = '▶ 시작';
-                btn.className = 'btn btn-start';
-                const container = document.getElementById('timer-container');
-                if (container) container.classList.remove('running');
-                document.body.classList.remove('race-running');
+                finishExam(); // 시간 만료 = 자동 종료
             }
+        }
+
+        // 시험 종료(시간 만료 또는 수동) — 현재까지 기록으로 결과 표시
+        function finishExam() {
+            if (timerEnded) return;
+            timerEnded = true;
+            clearInterval(timerInterval);
+            pausedElapsed = getElapsedTime(); // isRunning 끄기 전에 캡처
+            isRunning = false;
+            if (timerConfig.mode === 'grid') {
+                commitActiveLap();
+                activeQuestion = null;
+                activeQuestionStart = null;
+                renderQuestionCells();
+                updateAnswerDock();
+                document.body.classList.add('race-finished'); // 넓은화면 2단 접기
+                showInlineResults();
+            }
+            const btn = document.getElementById('start-btn');
+            btn.textContent = '▶ 시작';
+            btn.className = 'btn btn-start';
+            const container = document.getElementById('timer-container');
+            if (container) container.classList.remove('running');
+            document.body.classList.remove('race-running');
+        }
+
+        // 수동 종료 — 비블로킹 인페이지 확인창 (native confirm은 타이머 표시를 멈춰서 사용 안 함)
+        function confirmFinish() {
+            if (timerEnded || (getElapsedTime() === 0 && !isRunning)) return;
+            if (document.getElementById('finish-confirm')) return;
+            const back = document.createElement('div');
+            back.className = 'lap-popover-backdrop';
+            back.id = 'finish-confirm';
+            back.innerHTML =
+                '<div class="lap-popover">' +
+                '<div class="lap-popover-title">시험을 종료할까요?</div>' +
+                '<p style="text-align:center;color:var(--text-secondary);font-size:13px;">지금까지 입력으로 결과를 봅니다.</p>' +
+                '<div class="confirm-actions">' +
+                '<button type="button" class="cf-cancel">취소</button>' +
+                '<button type="button" class="cf-ok">종료</button>' +
+                '</div></div>';
+            document.body.appendChild(back);
+            const close = () => back.remove();
+            back.addEventListener('click', (e) => { if (e.target === back) close(); });
+            back.querySelector('.cf-cancel').addEventListener('click', close);
+            back.querySelector('.cf-ok').addEventListener('click', () => { close(); finishExam(); });
         }
 
         // 마일스톤 플래시 트리거용 — 직전 색 상태 추적
@@ -2217,7 +2254,7 @@
         // 객관식 정답을 '선택'하면 그 문항 풀이를 끝낸 것으로 보고
         // 현재 lap을 확정한 뒤 다음 번호로 타이밍을 자동 승계한다.
         //  · 의도: 학생이 매번 다음 문항 번호를 누르지 않고, 풀고-답 누르고-풀고-답 누르는 흐름도 지원.
-        //  · 주관식(OMR)은 입력이 자리수 단위라 자동 이동하지 않음 — 객관식에서만 호출.
+        //  · 객관식=선지 탭, 주관식=일의 자리 첫 입력(풀이 종료 신호)에서 호출.
         function advanceToNext(fromId) {
             const cur = parseInt(fromId, 10);
             if (isNaN(cur)) return false;
@@ -2275,6 +2312,12 @@
             });
             const section = document.getElementById('question-grid-section');
             if (section) section.classList.toggle('disabled', timerEnded);
+            // 시험 종료 버튼: 그리드 모드·진행 중에만 노출, 30문항 다 채우면 펄스 넛지
+            const fb = document.getElementById('finish-exam-btn');
+            if (fb) {
+                fb.style.display = (timerConfig.mode === 'grid' && !timerEnded) ? 'block' : 'none';
+                fb.classList.toggle('nudge', Object.keys(questionAnswers).length >= 30);
+            }
         }
 
         function showLapPopover(cellId) {
@@ -2413,8 +2456,11 @@
                     st[place] = (st[place] === d) ? '' : d; // 같은 숫자 재탭 → 해제 (다른 자리는 그대로)
                     questionOmr[q] = st;
                     setAnswer(q, omrValue(st) || null);
+                    // 일의 자리를 '선택'한 순간 = 풀이 종료 신호 → 객관식처럼 다음 문항으로 자동 이동
+                    const advanced = (place === 'o' && st.o !== '' && String(q) === String(activeQuestion)) ? advanceToNext(q) : false;
                     updateAnswerDock();
                     renderQuestionCells();
+                    if (advanced) scrollDockCurrentIntoView();
                 });
             });
         }
